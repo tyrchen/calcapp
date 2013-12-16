@@ -1,8 +1,8 @@
 package main
 
 import (
-	"./calc"
-	"./network"
+	"github.com/tyrchen/calcapp/calc"
+	"github.com/tyrchen/calcapp/network"
 	"fmt"
 	"unsafe"
 )
