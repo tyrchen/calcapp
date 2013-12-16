@@ -1,11 +1,17 @@
 package network
 
 import (
+	"bufio"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"regexp"
 )
+
+type KVPair map[string]string
+type IpMacTable []KVPair
 
 const (
 	IP_PREFIX = "192.168.0."
@@ -25,8 +31,8 @@ func SendPing() (seen map[string]bool) {
 	return
 }
 
-func ParseArpTable() (captures []map[string]string) {
-	captures = make([]map[string]string, 0)
+func ParseArpTable() (captures IpMacTable) {
+	captures = make(IpMacTable, 0)
 	data, err := exec.Command("arp", "-a").Output()
 	if err != nil {
 		fmt.Printf("Error running arp command: %v\n", err)
@@ -37,7 +43,7 @@ func ParseArpTable() (captures []map[string]string) {
 	names := regex.SubexpNames()
 	matches := regex.FindAllStringSubmatch(string(data), -1)
 	for _, match := range matches {
-		cmap := make(map[string]string)
+		cmap := make(KVPair)
 		for pos, val := range match {
 			name := names[pos]
 			if name != "" {
@@ -46,5 +52,30 @@ func ParseArpTable() (captures []map[string]string) {
 		}
 		captures = append(captures, cmap)
 	}
+	return
+}
+
+func SaveArpTable(filename string) {
+	ips := ParseArpTable()
+	f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, os.ModePerm)
+	if err != nil {
+		fmt.Printf("Error opening file: %v\n", err)
+		os.Exit(1)
+	}
+	defer f.Close()
+
+	s := bufio.NewWriter(f)
+	b, _ := json.Marshal(ips)
+	s.Write(b)
+	s.Flush()
+}
+
+func LoadArpTable(filename string) (ret IpMacTable) {
+	bytes, err := ioutil.ReadFile(filename)
+	if err != nil {
+		fmt.Printf("Error opening file: %v\n", err)
+		os.Exit(1)
+	}
+	json.Unmarshal(bytes, &ret)
 	return
 }

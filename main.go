@@ -21,7 +21,10 @@ func inspect() {
 }
 
 func getArpTable() {
-	fmt.Println("Arp table: \n", network.ParseArpTable())
+	network.SaveArpTable("./arp.dat")
+	ips := network.LoadArpTable("./arp.dat")
+	fmt.Println(ips)
+
 }
 
 func main() {
