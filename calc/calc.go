@@ -11,7 +11,7 @@ var (
 )
 
 func init_bp(filename string) {
-	var f, err = os.OpenFile(filename, os.O_RDONLY, os.ModePerm)
+	f, err := os.OpenFile(filename, os.O_RDONLY, os.ModePerm)
 	if err != nil {
 		fmt.Printf("Error opening file: %v\n", err)
 		os.Exit(1)

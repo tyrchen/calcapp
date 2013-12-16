@@ -12,14 +12,18 @@ type BaseData struct {
 }
 
 type BaseCalculator interface {
+	Init()
 	Calc(inst Bpoint, pos Value)
+}
+
+func (self *BaseData) Init() {
+
 }
 
 func (self *BaseData) Calc(inst Bpoint, pos Value) {
 	self.Inst[pos] = inst
 	self.Nbp[pos] = getNextBp(self.Bp[pos], inst)
 	var env = Env{}
-	env.init()
 	for i := 0; i < ROWS; i++ {
 		env.Bp = self.Bp[pos]
 		env.CurrentCol = pos

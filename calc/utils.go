@@ -18,11 +18,20 @@ func Abs(v Value) Value {
 func calc137(env *Env) (ret Point) {
 	ret.T = false
 	var v = Copysign(1, env.Last.V)
-	if env.Last.T {
+	var last = env.Last
+	if last.T {
 		ret.V = v
 	} else {
-		ret.V = Copysign(Abs(env.Last.V)*2+1, env.Last.V)
-		if ret.V > env.StopValue {
+		ret.V = Copysign(Abs(last.V)*2+1, last.V)
+
+		if env.CurrentCol >= STOP_COL &&
+			(ret.V > STOP_VALUE ||
+				last.V == 0 ||
+				last.T == true) {
+			ret.V = 0
+		}
+
+		if ret.V > STOP_VALUE {
 			ret.V = v
 		}
 	}
@@ -33,9 +42,9 @@ func calc137(env *Env) (ret Point) {
  * reverse sign if previous.t is true, not reverse otherwise
  */
 func calcReverse(env *Env) (ret Point) {
-	var sign = bsign(env.Bp)
+	sign := bsign(env.Bp)
 	ret = calc137(env)
-	var val = Abs(ret.V)
+	val := Abs(ret.V)
 	if env.Last.T {
 		ret.V = val * sign * -1
 	} else {
@@ -57,9 +66,5 @@ func bsign(bp Bpoint) Value {
 }
 
 func getNextBp(bp, inst Bpoint) Bpoint {
-	if bp == inst {
-		return 1
-	} else {
-		return 0
-	}
+	return bp ^ inst
 }

@@ -1,5 +1,9 @@
 package calc
 
+import (
+	"fmt"
+)
+
 const (
 	COLS       = 55 + 1
 	ROWS       = 9
@@ -17,15 +21,16 @@ type Point struct {
 }
 
 type Env struct {
-	StopValue  Value
-	StopCol    Value
 	CurrentCol Value
 	Last       Point
+	Base       Point
 	Bp         Bpoint
 }
 
-func (self *Env) init() *Env {
-	self.StopCol = STOP_COL
-	self.StopValue = STOP_VALUE
-	return self
+func (self *Point) ToString() string {
+	if self.T {
+		return fmt.Sprintf("z%d", self.V)
+	} else {
+		return fmt.Sprintf("%d", self.V)
+	}
 }
