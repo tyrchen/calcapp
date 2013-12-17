@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	osutil "github.com/tyrchen/goutil/osutil"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -17,9 +18,10 @@ const (
 	IP_PREFIX = "192.168.0."
 	IP_MAX    = 30
 	ARP_REGEX = `.*?\s+\((?P<ip>[\d\.]+)\)\s+at\s+(?P<mac>[a-zA-Z\d:]+)`
+	DATA_PATH = "data/mac/arp.dat"
 )
 
-func SendPing() (seen map[string]bool) {
+func sendPing() (seen map[string]bool) {
 	seen = make(map[string]bool, IP_MAX)
 
 	for i := 1; i <= IP_MAX; i++ {
@@ -31,7 +33,7 @@ func SendPing() (seen map[string]bool) {
 	return
 }
 
-func ParseArpTable() (captures IpMacTable) {
+func parseArpTable() (captures IpMacTable) {
 	captures = make(IpMacTable, 0)
 	data, err := exec.Command("arp", "-a").Output()
 	if err != nil {
@@ -55,8 +57,8 @@ func ParseArpTable() (captures IpMacTable) {
 	return
 }
 
-func SaveArpTable(filename string) {
-	ips := ParseArpTable()
+func saveArpTable(filename string) {
+	ips := parseArpTable()
 	f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, os.ModePerm)
 	if err != nil {
 		fmt.Printf("Error opening file: %v\n", err)
@@ -70,7 +72,7 @@ func SaveArpTable(filename string) {
 	s.Flush()
 }
 
-func LoadArpTable(filename string) (ret IpMacTable) {
+func loadArpTable(filename string) (ret IpMacTable) {
 	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {
 		fmt.Printf("Error opening file: %v\n", err)
@@ -78,4 +80,13 @@ func LoadArpTable(filename string) (ret IpMacTable) {
 	}
 	json.Unmarshal(bytes, &ret)
 	return
+}
+
+func GetIpMac() IpMacTable {
+	filename := DATA_PATH
+	if !osutil.FileExists(filename) {
+		saveArpTable(filename)
+	}
+
+	return loadArpTable(filename)
 }

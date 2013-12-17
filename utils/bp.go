@@ -5,25 +5,45 @@ import (
 	"encoding/gob"
 	"fmt"
 	"io/ioutil"
+	"strconv"
 	"strings"
 )
 
 const (
-	BP_START       = 0x001111222233334444
-	BP_END         = 0xeeeeddddccccbbbb
-	BP_SLICE_START = 5
-	BP_SLICE_END   = 61
-	BP_GAP         = 87654321
+	BP_START       = 0x222233334444
+	BP_END         = 0xf08eafddccccbbbb
+	BP_SLICE_START = 2
+	BP_SLICE_END   = 58
+	BP_GAP         = 0xe1111189321
 	BP_TOTAL       = 37000
+	BP_FILENAME    = "data/bp/basepoint%02d.dat"
 )
 
+func ValueToBp(val uint64) []uint8 {
+	arr := make([]uint8, 0)
+	for val > 0 {
+		arr = append(arr, uint8(val%2))
+		val /= 2
+	}
+	return arr[BP_SLICE_START:BP_SLICE_END]
+}
+
+func StringToBp(val string) []uint8 {
+	arr := make([]uint8, 0)
+	for i := 0; i < len(val); i++ {
+		v, _ := strconv.Atoi(string(val[i]))
+		arr = append(arr, uint8(v))
+	}
+	return arr
+}
+
 func ValueToString(val uint64) string {
-	var arr []string
+	arr := make([]string, 0)
 	for val > 0 {
 		arr = append(arr, string(val%2))
 		val /= 2
 	}
-	return strings.Join(arr, "")[BP_SLICE_START:BP_SLICE_END]
+	return strings.Join(arr[BP_SLICE_START:BP_SLICE_END], "")
 }
 
 func GenerateBpFiles(max uint) {
@@ -53,7 +73,7 @@ func GenerateBpFiles(max uint) {
 		fmt.Printf("Length of values_list[%d] is %d", i, len(values_list[i]))
 		enc.Encode(values_list[i])
 
-		filename := fmt.Sprintf("./basepoint%02d.dat", i+1)
+		filename := fmt.Sprintf(BP_FILENAME, i+1)
 		err := ioutil.WriteFile(filename, m.Bytes(), 0600)
 		if err != nil {
 			panic(err)
@@ -63,7 +83,8 @@ func GenerateBpFiles(max uint) {
 	}
 }
 
-func LoadBpFile(name string) (values []uint64) {
+func LoadBpFile(index uint) (values []uint64) {
+	name := fmt.Sprintf(BP_FILENAME, index)
 	n, err := ioutil.ReadFile(name)
 	if err != nil {
 		panic(err)

@@ -2,6 +2,7 @@ package calc
 
 import (
 	"fmt"
+	"strconv"
 )
 
 const (
@@ -27,7 +28,11 @@ type Env struct {
 	Bp         Bpoint
 }
 
-func (self *Point) ToString() string {
+func (self *Bpoint) String() string {
+	return strconv.Itoa(int(*self))
+}
+
+func (self *Point) String() string {
 	if self.T {
 		return fmt.Sprintf("z%d", self.V)
 	} else {

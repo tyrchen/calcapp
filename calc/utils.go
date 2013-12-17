@@ -15,10 +15,32 @@ func Abs(v Value) Value {
 /*
  * increase with 1,3,7 until stop value
  */
+
 func calc137(env *Env) (ret Point) {
 	ret.T = false
-	var v = Copysign(1, env.Last.V)
-	var last = env.Last
+	last := env.Last
+	if last.T {
+		ret.V = 1
+	} else {
+		ret.V = Abs(last.V)*2 + 1
+		if env.CurrentCol >= STOP_COL &&
+			(ret.V > STOP_VALUE ||
+				last.V == 0 ||
+				last.T == true) {
+			ret.V = 0
+		}
+
+		if ret.V > STOP_VALUE {
+			ret.V = 1
+		}
+	}
+	return
+}
+
+func calc137WithSign(env *Env) (ret Point) {
+	ret.T = false
+	v := Copysign(1, env.Last.V)
+	last := env.Last
 	if last.T {
 		ret.V = v
 	} else {
@@ -62,9 +84,23 @@ func bsign(bp Bpoint) Value {
 	} else {
 		return -1
 	}
+}
 
+func pointToBp(p Point) Bpoint {
+	if p.T {
+		return 1
+	}
+	return 0
 }
 
 func getNextBp(bp, inst Bpoint) Bpoint {
 	return bp ^ inst
+}
+
+func withZ(p *Point, inst Bpoint) {
+	if (p.V > 0 && inst == 1) || (p.V < 0 && inst == 0) {
+		p.T = true
+	} else {
+		p.T = false
+	}
 }

@@ -10,5 +10,4 @@ build_src
 bundles/
 .git/
 *.dat
-main
-calcapp
+bin/*

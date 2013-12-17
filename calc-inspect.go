@@ -2,8 +2,6 @@ package main
 
 import (
 	"calcapp/calc"
-	"calcapp/network"
-	"calcapp/utils"
 	"fmt"
 	"unsafe"
 )
@@ -21,21 +19,6 @@ func inspect() {
 	fmt.Printf("sizeof GroupData: %d\n", unsafe.Sizeof(group))
 }
 
-func getArpTable() {
-	network.SaveArpTable("./arp.dat")
-	ips := network.LoadArpTable("./arp.dat")
-	fmt.Println(ips)
-
-}
-
-func generateBp() {
-	utils.GenerateBpFiles(30)
-	fmt.Printf("%v\n", utils.LoadBpFile("basepoint01.dat"))
-}
-
 func main() {
-	//getArpTable()
 	inspect()
-	//generateBp()
-	//calc.Init("basepoint00.dat")
 }
