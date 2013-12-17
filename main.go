@@ -3,6 +3,7 @@ package main
 import (
 	"calcapp/calc"
 	"calcapp/network"
+	"calcapp/utils"
 	"fmt"
 	"unsafe"
 )
@@ -27,8 +28,14 @@ func getArpTable() {
 
 }
 
+func generateBp() {
+	utils.GenerateBpFiles(30)
+	fmt.Printf("%v\n", utils.LoadBpFile("basepoint01.dat"))
+}
+
 func main() {
-	getArpTable()
+	//getArpTable()
 	inspect()
+	//generateBp()
 	//calc.Init("basepoint00.dat")
 }
