@@ -32,10 +32,6 @@ type Env struct {
 	Bp         Bpoint
 }
 
-var (
-	Values GroupData
-)
-
 func (self Bpoint) String() string {
 	return strconv.Itoa(int(self))
 }

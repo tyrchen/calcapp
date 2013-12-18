@@ -20,8 +20,6 @@ type chanData struct {
 	gf1 Value
 }
 
-const ()
-
 func (self *GroupData) LoadBp(index uint) {
 	values := utils.LoadBpFile(index)
 	for row, value := range values {

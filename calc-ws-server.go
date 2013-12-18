@@ -17,6 +17,10 @@ type CalcData struct {
 	Values [2][3]Point
 }
 
+var (
+	values *GroupData
+)
+
 func calcHandler(ws *websocket.Conn) {
 	var err error
 
@@ -65,27 +69,28 @@ func runCommand(ws *websocket.Conn, reply string) {
 }
 
 func calc(inst Bpoint, col Value) CalcData {
-	Values.Run(inst, col)
-	fmt.Println(Values)
+	values.Run(inst, col)
+	fmt.Println(values)
 	return getValues(col)
 }
 
 func getValues(col Value) (ret CalcData) {
 	ret.Method = "calc"
 	ret.Col = col
-	ret.Values[0] = [3]Point{Values.Zg[col], Values.Gz[col], Values.Gf1[col]}
-	ret.Values[1] = [3]Point{Values.Zg[col+1], Values.Gz[col+1], Values.Gf1[col+1]}
+	ret.Values[0] = [3]Point{values.Zg[col], values.Gz[col], values.Gf1[col]}
+	ret.Values[1] = [3]Point{values.Zg[col+1], values.Gz[col+1], values.Gf1[col+1]}
 
 	return ret
 }
 
 func initValues() {
-	Values.LoadBp(1)
-	Values.Init()
+	values = new(GroupData)
+	values.LoadBp(1)
+	values.Init()
 }
 
 func clear() {
-	Values.Clear()
+	values.Clear()
 	initValues()
 }
 
