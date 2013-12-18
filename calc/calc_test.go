@@ -3,19 +3,13 @@ package calc
 import (
 	"calcapp/utils"
 	"fmt"
+	"runtime"
 	"testing"
 )
 
 const (
-	BP_FOR_TEST = "10110111110011110101101011010101101111100001111010110001"
-)
-
-var (
-	insts = [...]string{
-		"11111111111111111111111111111111111111111111111111111111",
-		"00000000000000000000000000000000000000000000000000000000",
-		"10101010101010101010101010101010101010101010101010101010",
-	}
+	BP_FOR_TEST   = "10001010100111101100000111010100100011111100011100111111"
+	INST_FOR_TEST = "10011111110000101101101010011111100110010010011111000000"
 )
 
 func getEnv(bp Bpoint, currentCol Value, last Point) (env *Env) {
@@ -30,10 +24,10 @@ func testCalcReverse(t *testing.T, env *Env, expected Point) {
 	ret := calcReverse(env)
 	if ret.T == expected.T && ret.V == expected.V {
 		t.Logf("calcReverse(bp=%d, col=%d, last=%v) = %v",
-			env.Bp, env.CurrentCol, env.Last.String(), expected.String())
+			env.Bp, env.CurrentCol, env.Last, expected)
 	} else {
 		t.Errorf("Error: calcReverse(bp=%d, col=%d, last=%s, expected=%s) = %s",
-			env.Bp, env.CurrentCol, env.Last, expected.String(), ret.String())
+			env.Bp, env.CurrentCol, env.Last, expected, ret)
 	}
 }
 
@@ -41,11 +35,10 @@ func testBaseDataCalc(t *testing.T, data BaseData, insts string) {
 	data.LoadBp(utils.StringToBp(BP_FOR_TEST))
 	data.Init()
 	for i, v := range utils.StringToBp(insts) {
-		data.Calc(Bpoint(v), Value(i))
+		data.Run(Bpoint(v), Value(i))
 	}
 
-	fmt.Println(data.String())
-	t.Errorf("Error")
+	fmt.Println(data)
 
 }
 
@@ -60,7 +53,30 @@ func TestCalcReverse(t *testing.T) {
 
 func TestBaseDataCalc(t *testing.T) {
 	var data BaseData
-	for i := 0; i < len(insts); i++ {
-		testBaseDataCalc(t, data, insts[i])
+	testBaseDataCalc(t, data, INST_FOR_TEST)
+}
+
+func TestGroupCalc(t *testing.T) {
+	var data GroupData
+	runtime.GOMAXPROCS(8)
+	data.LoadBp(1)
+	data.Init()
+	for i, v := range utils.StringToBp(INST_FOR_TEST) {
+		data.Run(Bpoint(v), Value(i))
 	}
+	fmt.Println(data.Data[GROUP_SIZE-1])
+	fmt.Println(data.String())
+	/*
+		data.Clear()
+		fmt.Println(data.Data[GROUP_SIZE-1])
+		fmt.Println(data.String())
+
+		data.LoadBp(1)
+		data.Init()
+		for i, v := range utils.StringToBp(INST_FOR_TEST) {
+			data.Run(Bpoint(v), Value(i))
+		}
+		fmt.Println(data.Data[GROUP_SIZE-1])
+		fmt.Println(data.String())
+	*/
 }

@@ -76,6 +76,16 @@ func calcReverse(env *Env) (ret Point) {
 }
 
 /*
+ * follow the sign of up (or reverse)
+ */
+func calcFollow(env *Env, same Value) (ret Point) {
+	sign := bsign(env.Bp)
+	ret = calc137(env)
+	ret.V *= sign * same
+	return ret
+}
+
+/*
  * sign of bp: 0: -1, 1: 1
  */
 func bsign(bp Bpoint) Value {
@@ -87,14 +97,14 @@ func bsign(bp Bpoint) Value {
 }
 
 func pointToBp(p Point) Bpoint {
-	if p.T {
+	if p.V > 0 {
 		return 1
 	}
 	return 0
 }
 
 func getNextBp(bp, inst Bpoint) Bpoint {
-	return bp ^ inst
+	return bp ^ ^inst + 2
 }
 
 func withZ(p *Point, inst Bpoint) {

@@ -3,20 +3,29 @@ DONE="\n$(CHECK) Done.\n"
 
 GO=go
 BIN=./bin
+DATA=/var/tmp/calcapp
+PACKAGES=network utils calc
+PACKAGE_PATHS=$(patsubst %,./%, $(PACKAGES))
 TARGETS=$(patsubst %.go,$(BIN)/%,$(wildcard *.go))
+ALL_FILES=$(shell find . -type f -name '*.go')
 
-.PHONY: build clean dir
+.PHONY: build packages clean dir
 
-build: $(TARGETS)
+build: clean packages $(TARGETS)
 	@echo $(DONE)
 
 $(TARGETS): $(BIN)/%: %.go
 	@echo "building $<..."
 	@$(GO) build -o $@ $< 
 
+packages:
+	@echo "making packages"
+	@$(GO) install $(PACKAGE_PATHS)
+
+
 dir:
-	@mkdir -p $(BIN)/data/bp
-	@mkdir -p $(BIN)/data/mac
+	@mkdir -p $(DATA)/bp
+	@mkdir -p $(DATA)/mac
 
 clean:
 	@rm -f $(TARGETS)

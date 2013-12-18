@@ -1,7 +1,6 @@
 package main
 
 import (
-	"calcapp/calc"
 	"calcapp/utils"
 )
 
@@ -11,5 +10,4 @@ func generateBp() {
 
 func main() {
 	generateBp()
-	calc.LoadBp(30)
 }

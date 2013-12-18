@@ -11,10 +11,15 @@ const (
 	GROUP_SIZE = 37000
 	STOP_COL   = 36
 	STOP_VALUE = 1048575
+
+	// for concurrency
+	CHUNKS     = 100
+	CHUNK_SIZE = GROUP_SIZE / CHUNKS
 )
 
 type Bpoint uint8
 type Value int
+type Duck interface{}
 
 type Point struct {
 	T bool
@@ -24,15 +29,18 @@ type Point struct {
 type Env struct {
 	CurrentCol Value
 	Last       Point
-	Base       Point
 	Bp         Bpoint
 }
 
-func (self *Bpoint) String() string {
-	return strconv.Itoa(int(*self))
+var (
+	Values GroupData
+)
+
+func (self Bpoint) String() string {
+	return strconv.Itoa(int(self))
 }
 
-func (self *Point) String() string {
+func (self Point) String() string {
 	if self.T {
 		return fmt.Sprintf("z%d", self.V)
 	} else {

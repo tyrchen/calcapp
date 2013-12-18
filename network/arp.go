@@ -18,7 +18,7 @@ const (
 	IP_PREFIX = "192.168.0."
 	IP_MAX    = 30
 	ARP_REGEX = `.*?\s+\((?P<ip>[\d\.]+)\)\s+at\s+(?P<mac>[a-zA-Z\d:]+)`
-	DATA_PATH = "data/mac/arp.dat"
+	DATA_PATH = "/var/tmp/calcapp/mac/arp.dat"
 )
 
 func sendPing() (seen map[string]bool) {

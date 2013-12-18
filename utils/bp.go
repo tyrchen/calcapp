@@ -16,7 +16,7 @@ const (
 	BP_SLICE_END   = 58
 	BP_GAP         = 0xe1111189321
 	BP_TOTAL       = 37000
-	BP_FILENAME    = "data/bp/basepoint%02d.dat"
+	BP_FILENAME    = "/var/tmp/calcapp/bp/basepoint%02d.dat"
 )
 
 func ValueToBp(val uint64) []uint8 {
