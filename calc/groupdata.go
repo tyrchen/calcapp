@@ -19,7 +19,7 @@ func (self *GroupData) LoadBp(index uint) {
 }
 
 func (self *GroupData) Clear() {
-	*self = GroupData{}
+	*self = *new(GroupData)
 }
 
 func (self *GroupData) Init() {
