@@ -57,7 +57,7 @@ func TestBaseDataCalc(t *testing.T) {
 }
 
 func TestGroupCalc(t *testing.T) {
-	var data GroupData
+	data := new(GroupData)
 	runtime.GOMAXPROCS(8)
 	data.LoadBp(1)
 	data.Init()

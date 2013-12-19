@@ -1,10 +1,5 @@
 package calc
 
-import (
-	"fmt"
-	"strconv"
-)
-
 const (
 	COLS       = 55 + 1
 	ROWS       = 9
@@ -32,14 +27,21 @@ type Env struct {
 	Bp         Bpoint
 }
 
-func (self Bpoint) String() string {
-	return strconv.Itoa(int(self))
+type BaseData struct {
+	Inst [COLS]Bpoint
+	Bp   [COLS]Bpoint
+	Nbp  [COLS]Bpoint
+	Data [ROWS][COLS]Point
+	Xg   [COLS]Point
+	Gz   [COLS]Point
+	Gf   [COLS]Point
+	Gf1  [COLS]Point
 }
 
-func (self Point) String() string {
-	if self.T {
-		return fmt.Sprintf("z%d", self.V)
-	} else {
-		return fmt.Sprintf("%d", self.V)
-	}
+type GroupData struct {
+	Inst [COLS]Bpoint
+	Data [GROUP_SIZE]BaseData
+	Zg   [COLS]Point
+	Gz   [COLS]Point
+	Gf1  [COLS]Point
 }
