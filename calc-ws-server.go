@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	//"strconv"
-	//"strings"
 )
 
 type CalcData struct {
@@ -70,7 +68,6 @@ func runCommand(ws *websocket.Conn, reply string) {
 
 func calc(inst Bpoint, col Value) CalcData {
 	values.Run(inst, col)
-	fmt.Println(values)
 	return getValues(col)
 }
 
