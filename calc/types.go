@@ -25,6 +25,7 @@ type Env struct {
 	CurrentCol Value
 	Last       Point
 	Bp         Bpoint
+	Stop       bool
 }
 
 type BaseData struct {

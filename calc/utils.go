@@ -23,16 +23,20 @@ func calc137(env *Env) (ret Point) {
 		ret.V = 1
 	} else {
 		ret.V = Abs(last.V)*2 + 1
-		if env.CurrentCol >= STOP_COL &&
-			(ret.V > STOP_VALUE ||
-				last.V == 0 ||
-				last.T == true) {
-			ret.V = 0
-		}
 
 		if ret.V > STOP_VALUE {
 			ret.V = 1
 		}
+	}
+
+	// speical handling in STOP_COL
+
+	if env.Stop && env.CurrentCol >= STOP_COL &&
+		(ret.V > STOP_VALUE ||
+			last.V == 0 ||
+			int(Abs(last.V)) == STOP_VALUE ||
+			last.T == true) {
+		ret.V = 0
 	}
 	return
 }

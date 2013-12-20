@@ -98,6 +98,12 @@ func (self *GroupData) calc(pos Value) {
 		}
 	}
 
+	// remove last value, so that we actually calculate GROUP_SIZE - 1
+	self.Zg[pos].V -= self.Data[GROUP_SIZE-1].Xg[pos].V
+	self.Gz[pos].V -= self.Data[GROUP_SIZE-1].Gz[pos].V
+	self.Gf[pos].V -= self.Data[GROUP_SIZE-1].Gf[pos].V
+	self.Gf1[pos].V -= self.Data[GROUP_SIZE-1].Gf1[pos].V
+
 	/*
 		for i := 0; i < GROUP_SIZE; i++ {
 			self.Data[i].calc(pos)

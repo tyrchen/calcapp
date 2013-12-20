@@ -11,10 +11,20 @@ import (
 	"strconv"
 )
 
+const (
+	BASE_DATA_VALUE_ROWS = 3 + ROWS + 4
+)
+
 type CalcData struct {
 	Method string
-	Col    Value
+	Pos    Value
 	Values [2][4]Point
+}
+
+type BaseDataValue struct {
+	Method string
+	Pos    Value
+	Values [2][BASE_DATA_VALUE_ROWS]Point
 }
 
 var (
@@ -25,9 +35,7 @@ func calcHandler(ws *websocket.Conn) {
 	var err error
 
 	// send initial data
-	ret := getValues(0)
-	b, _ := json.Marshal(ret)
-	wsSend(ws, string(b))
+	sendData(0, ws)
 
 	for {
 		var reply string
@@ -51,6 +59,14 @@ func wsSend(ws *websocket.Conn, msg string) {
 	}
 }
 
+func sendData(pos Value, ws *websocket.Conn) {
+	b, _ := json.Marshal(getValues(pos))
+	wsSend(ws, string(b))
+	// send one of the BaseData
+	b1, _ := json.Marshal(getBaseDataValue(pos))
+	wsSend(ws, string(b1))
+}
+
 func runCommand(ws *websocket.Conn, reply string) {
 	var v interface{}
 	json.Unmarshal([]byte(reply), &v)
@@ -58,26 +74,48 @@ func runCommand(ws *websocket.Conn, reply string) {
 	switch m["method"].(string) {
 	case "calc":
 		inst, pos := Bpoint(m["inst"].(float64)), Value(m["pos"].(float64))
+		calc(inst, pos)
+		sendData(pos, ws)
 
-		ret := calc(inst, pos)
-		b, _ := json.Marshal(ret)
-		wsSend(ws, string(b))
 	case "close":
 		clear()
 		wsSend(ws, `{"method":"close","value":"true"}`)
 	}
 }
 
-func calc(inst Bpoint, col Value) CalcData {
-	values.Run(inst, col)
-	return getValues(col)
+func calc(inst Bpoint, pos Value) {
+	values.Run(inst, pos)
+
 }
 
-func getValues(col Value) (ret CalcData) {
+func getBaseDataValue(pos Value) (ret BaseDataValue) {
+	var i Value
+	data := values.Data[GROUP_SIZE-1]
+	ret.Pos = pos
+	ret.Method = "xg"
+	for i = 0; i < 2; i++ {
+		ret.Values[i][0] = Point{false, Value(data.Inst[pos+i])}
+		ret.Values[i][1] = Point{false, Value(data.Bp[pos+i])}
+		ret.Values[i][2] = Point{false, Value(data.Nbp[pos+i])}
+
+		for j := 0; j < ROWS; j++ {
+			ret.Values[i][j+3] = data.Data[j][pos+i]
+		}
+
+		ret.Values[i][12] = data.Xg[pos+i]
+		ret.Values[i][13] = data.Gz[pos+i]
+		ret.Values[i][14] = data.Gf[pos+i]
+		ret.Values[i][15] = data.Gf1[pos+i]
+	}
+
+	return ret
+}
+
+func getValues(pos Value) (ret CalcData) {
 	ret.Method = "calc"
-	ret.Col = col
-	ret.Values[0] = [4]Point{values.Zg[col], values.Gz[col], values.Gf[col], values.Gf1[col]}
-	ret.Values[1] = [4]Point{values.Zg[col+1], values.Gz[col+1], values.Gf[col+1], values.Gf1[col+1]}
+	ret.Pos = pos
+	ret.Values[0] = [4]Point{values.Zg[pos], values.Gz[pos], values.Gf[pos], values.Gf1[pos]}
+	ret.Values[1] = [4]Point{values.Zg[pos+1], values.Gz[pos+1], values.Gf[pos+1], values.Gf1[pos+1]}
 
 	return ret
 }

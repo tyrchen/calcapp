@@ -81,15 +81,16 @@ func (self *BaseData) calcGzf(pos Value, same Value) {
 	env.CurrentCol = pos
 	env.Bp = pointToBp(self.Xg[pos])
 	env.Last = val[pos-1]
+	env.Stop = true
 
 	data := calcFollow(&env, same)
 	val[pos] = data
 }
 
 func (self *BaseData) calcGf1(pos Value) {
-	if self.Gf[pos].V > 0 {
-		self.Gf1[pos].V = 1
-	} else {
+	if self.Xg[pos].V > 0 {
 		self.Gf1[pos].V = -1
+	} else {
+		self.Gf1[pos].V = 1
 	}
 }
