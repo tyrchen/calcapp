@@ -24,7 +24,7 @@ packages:
 
 
 dir:
-	@mkdir -p $(DATA)/bp
+	@mkdir -p $(DATA)/bp/origin $(DATA)/bp/new
 	@mkdir -p $(DATA)/mac
 
 clean:

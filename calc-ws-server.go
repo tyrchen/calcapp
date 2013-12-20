@@ -7,12 +7,14 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 )
 
 type CalcData struct {
 	Method string
 	Col    Value
-	Values [2][3]Point
+	Values [2][4]Point
 }
 
 var (
@@ -74,25 +76,34 @@ func calc(inst Bpoint, col Value) CalcData {
 func getValues(col Value) (ret CalcData) {
 	ret.Method = "calc"
 	ret.Col = col
-	ret.Values[0] = [3]Point{values.Zg[col], values.Gz[col], values.Gf1[col]}
-	ret.Values[1] = [3]Point{values.Zg[col+1], values.Gz[col+1], values.Gf1[col+1]}
+	ret.Values[0] = [4]Point{values.Zg[col], values.Gz[col], values.Gf[col], values.Gf1[col]}
+	ret.Values[1] = [4]Point{values.Zg[col+1], values.Gz[col+1], values.Gf[col+1], values.Gf1[col+1]}
 
 	return ret
 }
 
-func initValues() {
+func initValues(index uint) {
 	values = new(GroupData)
-	values.LoadBp(1)
+	values.LoadBp(index)
 	values.Init()
 }
 
 func clear() {
+	index := values.Index
 	values.Clear()
-	initValues()
+	initValues(index)
 }
 
 func main() {
-	initValues()
+	if len(os.Args) != 2 {
+		fmt.Fprintf(os.Stderr, "Usage: %s <index>", os.Args[0])
+		os.Exit(1)
+	}
+
+	val, _ := strconv.Atoi(os.Args[1])
+	index := uint(val)
+
+	initValues(index)
 
 	http.Handle("/", websocket.Handler(calcHandler))
 

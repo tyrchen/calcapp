@@ -45,7 +45,7 @@ func (self *BaseData) showValue(start int) (arr []string) {
 	arr = append(arr, printBp("New BP", self.Nbp[start:end]))
 
 	for i := 0; i < ROWS; i++ {
-		arr = append(arr, printPoint(string(i), self.Data[i][start:end]))
+		arr = append(arr, printPoint(strconv.Itoa(i+1), self.Data[i][start:end]))
 	}
 
 	arr = append(arr, printPoint("XG", self.Xg[start:end]))

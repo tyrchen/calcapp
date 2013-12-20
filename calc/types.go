@@ -39,9 +39,11 @@ type BaseData struct {
 }
 
 type GroupData struct {
-	Inst [COLS]Bpoint
-	Data [GROUP_SIZE]BaseData
-	Zg   [COLS]Point
-	Gz   [COLS]Point
-	Gf1  [COLS]Point
+	Index uint
+	Inst  [COLS]Bpoint
+	Data  [GROUP_SIZE]BaseData
+	Zg    [COLS]Point
+	Gz    [COLS]Point
+	Gf    [COLS]Point
+	Gf1   [COLS]Point
 }

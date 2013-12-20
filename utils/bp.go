@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"strconv"
-	"strings"
+	//"strings"
 )
 
 const (
@@ -16,10 +16,14 @@ const (
 	BP_SLICE_END   = 58
 	BP_GAP         = 0xe1111189321
 	BP_TOTAL       = 37000
-	BP_FILENAME    = "/var/tmp/calcapp/bp/basepoint%02d.dat"
+	BP_COLS        = 55 + 1
+	BP_FILENAME    = "/var/tmp/calcapp/bp/%s/basepoint%02d.dat"
 )
 
-func ValueToBp(val uint64) []uint8 {
+type Bp [BP_COLS]uint8
+type BpData [BP_TOTAL]Bp
+
+func uint64ToBp(val uint64) []uint8 {
 	arr := make([]uint8, 0)
 	for val > 0 {
 		arr = append(arr, uint8(val%2))
@@ -37,54 +41,77 @@ func StringToBp(val string) []uint8 {
 	return arr
 }
 
-func ValueToString(val uint64) string {
-	arr := make([]string, 0)
-	for val > 0 {
-		arr = append(arr, string(val%2))
-		val /= 2
+func generateBpData(val uint64) (ret Bp) {
+	data := uint64ToBp(val)
+
+	for i := 0; i < BP_COLS; i++ {
+		ret[i] = data[i]
 	}
-	return strings.Join(arr[BP_SLICE_START:BP_SLICE_END], "")
+	return ret
 }
 
 func GenerateBpFiles(max uint) {
-	values_list := make([][]uint64, 0)
-	var i uint
+	var zero BpData
 	var val uint64
+	var i, j uint = 0, 0
 
-	i = 0
-	values := make([]uint64, 0)
+	values := zero
+	values_list := make([]BpData, 0)
+
 	for val = BP_START; val < BP_END; val += BP_GAP {
 
-		values = append(values, val)
-		if len(values) >= BP_TOTAL {
+		if j < BP_TOTAL {
+			values[j] = generateBpData(val)
+			j++
+		} else {
 			values_list = append(values_list, values)
-			fmt.Printf("i=%d, values[0]=%d\n", i, values[0])
 			i++
 			if i >= max {
 				break
 			}
-			values = make([]uint64, 0)
+			values = zero
+			j = 0
 		}
 	}
 
 	for i = 0; i < max; i++ {
-		m := new(bytes.Buffer)
-		enc := gob.NewEncoder(m)
-		fmt.Printf("Length of values_list[%d] is %d", i, len(values_list[i]))
-		enc.Encode(values_list[i])
-
-		filename := fmt.Sprintf(BP_FILENAME, i+1)
-		err := ioutil.WriteFile(filename, m.Bytes(), 0600)
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Printf("File %s saved\n", filename)
+		filename := GetFileName(i, true)
+		saveBpFile(filename, values_list[i])
 	}
 }
 
-func LoadBpFile(index uint) (values []uint64) {
-	name := fmt.Sprintf(BP_FILENAME, index)
+func saveBpFile(filename string, values BpData) {
+	m := new(bytes.Buffer)
+	enc := gob.NewEncoder(m)
+	enc.Encode(values)
+
+	err := ioutil.WriteFile(filename, m.Bytes(), 0600)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("File %s saved\n", filename)
+}
+
+func SaveBpFile(index uint, values BpData) {
+	filename := GetFileName(index, false)
+	saveBpFile(filename, values)
+}
+
+func GetFileName(index uint, origin bool) string {
+	options := map[bool]string{
+		false: "new",
+		true:  "origin",
+	}
+
+	return fmt.Sprintf(BP_FILENAME, options[origin], index+1)
+}
+
+func LoadBpFile(index uint, origin bool) (values BpData) {
+	name := GetFileName(index, origin)
+
+	fmt.Println("Load basepoint from: ", name)
+
 	n, err := ioutil.ReadFile(name)
 	if err != nil {
 		panic(err)
@@ -92,7 +119,6 @@ func LoadBpFile(index uint) (values []uint64) {
 
 	m := bytes.NewBuffer(n)
 	dec := gob.NewDecoder(m)
-	values = make([]uint64, 0)
 	err = dec.Decode(&values)
 	if err != nil {
 		panic(err)
