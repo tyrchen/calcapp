@@ -58,8 +58,23 @@ func (self *GroupData) Init(index uint) {
 		self.Gf[0].V += self.Data[i].Gf[0].V
 		self.Gf1[0].V += self.Data[i].Gf1[0].V
 	}
-	self.Gzmm[0].V = self.Gz[0].V * self.Gzm
-	self.Gfmm[0].V = self.Gf[0].V * self.Gfm
+
+	// gz and gf + follow base, - reverse with base
+	self.SignFollow(0)
+
+	self.CalcGmm(0)
+
+}
+
+func (self *GroupData) SignFollow(pos Value) {
+	self.Gz[pos].V = signFollow(self.Gz[pos].V, self.Bp[pos])
+	self.Gf[pos].V = signFollow(self.Gf[pos].V, self.Bp[pos])
+
+}
+
+func (self *GroupData) CalcGmm(pos Value) {
+	self.Gzmm[pos].V = self.Gz[pos].V * self.Gzm
+	self.Gfmm[pos].V = self.Gf[pos].V * self.Gfm
 }
 
 func (self *GroupData) Run(inst Bpoint, pos Value) {
@@ -127,8 +142,9 @@ func (self *GroupData) calc(pos Value) {
 	self.Gf[pos].V -= self.Data[GROUP_SIZE-1].Gf[pos].V
 	self.Gf1[pos].V -= self.Data[GROUP_SIZE-1].Gf1[pos].V
 
-	self.Gzmm[pos].V = self.Gzm * self.Gz[pos].V
-	self.Gfmm[pos].V = self.Gfm * self.Gf[pos].V
+	self.SignFollow(pos)
+
+	self.CalcGmm(pos)
 
 	/*
 		for i := 0; i < GROUP_SIZE; i++ {

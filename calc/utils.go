@@ -101,6 +101,12 @@ func calcFollow(env *Env, same Value) (ret Point) {
 	return ret
 }
 
+func signFollow(value Value, bp Bpoint) (ret Value) {
+	sign := bsign(bp)
+	ret = sign * value
+	return ret
+}
+
 /*
  * sign of bp: 0: -1, 1: 1
  */
