@@ -1,0 +1,137 @@
+<html>
+<head>
+    <link rel="stylesheet" media="screen" href="assets/css/app.min.css">
+    <link rel="stylesheet" media="screen" href="assets/css/jquery.handsontable.full.css">
+
+
+</head>
+<body>
+    <div class="container">
+        <h1>运算器 <button class="btn btn-primary calc-clear">清空</button></h1>
+        <div id="calc-table" class="handsontable">
+            
+        </div>
+    </div>
+    
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/lodash.min.js"></script>
+    <script src="assets/js/jquery.handsontable.full.js"></script>
+
+    <script language="javascript">
+        var sock = null;
+        var wsuri = "ws://127.0.0.1:8210";
+        var container = $('#calc-table');
+        var initDone = false;
+        var initDone1 = false;
+        $(function() {
+            initWebsocket();
+            initTable(container);
+            $('.calc-clear').on('click', function(e) {
+                sock.send(JSON.stringify({'method': 'close'}));
+            });
+        });
+
+
+        
+        function send(data) {
+            var msg = JSON.stringify(data);
+            sock.send(msg);
+        };
+
+        function initWebsocket() {
+            sock = new WebSocket(wsuri);
+
+            sock.onopen = function() {
+                console.log("connected to " + wsuri);
+            }
+
+            sock.onclose = function(e) {
+                console.log("connection closed (" + e.code + ")");
+            }
+
+            sock.onmessage = function(e) {
+                console.log("message received: " + e.data);
+                var data = JSON.parse(e.data);
+                switch(data.Method) {
+                    case 'calc':
+                        showData(data); break;
+                    //case 'xg':
+                    //    showXg(data); break;
+                    case 'close':
+                        container.handsontable('clear'); break;
+
+                }
+
+            }
+        }
+
+        function formatPoint(p) {
+            //console.log(p);
+            if (p.T) return 'z' + p.V;
+            return p.V;
+        }
+
+        function showData(data) {
+            var inst = container.handsontable('getInstance');
+            for(var col=0;col<2;col++) {
+                if (!initDone && col == 1) {
+                    initDone = true;
+                    continue;
+                }
+                for(var row=1; row<5; row++) {
+                    inst.setDataAtCell(row, col+data.Pos, formatPoint(data.Values[col][row-1]));
+                }
+            }
+        }
+
+        function showXg(data) {
+            var inst = container.handsontable('getInstance');
+            for(var col=0;col<2;col++) {
+                if (!initDone1 && col == 1) {
+                    initDone1 = true;
+                    continue;
+                }
+
+                for(var row=6; row<6+16; row++) {
+                    inst.setDataAtCell(row, col+data.Pos, formatPoint(data.Values[col][row-6]));
+                }
+            }
+        }
+
+        function initTable(container) {
+            var lastCol = -1;
+            container.handsontable({
+                minSpareRows: 1,
+                minRows: 5,//+ 17,
+                minCols: 55,
+                currentRowClassName: 'currentRow',
+                currentColClassName: 'currentCol',
+                rowHeaders: ['输入', '中果', '果正', '果反', '果反1', ''],
+                            //'输入', '基本点', '下基本点', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+                            //'小果', '果正', '果反', '果反1', ''],
+                colHeaders: _.range(1, 56),
+                colWidths: _.times(55, function(n) { return 90;}),
+                scrollH: 'none',
+                cells: function (row, col, prop) {
+                    var cellProperties = {};
+                    if (row != 0) cellProperties.readOnly = true;
+                    
+                    return cellProperties;
+                },
+                beforeKeyDown: function (e) {
+                    var instance = container.handsontable('getInstance')
+                      , selection = instance.getSelected();
+                    if (e.keyCode == 49 || e.keyCode == 48) {
+                        var col = selection[1];
+                        if (col - lastCol == 1) {
+                            var inst = e.keyCode - 48;
+                            send({method: 'calc', pos: col, inst: inst});
+                            lastCol = col;
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
