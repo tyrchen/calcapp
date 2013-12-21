@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"runtime"
 	"strconv"
 )
 
@@ -175,6 +176,8 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Usage: %s <port> <index>", os.Args[0])
 		os.Exit(1)
 	}
+
+	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	sport, _ := strconv.Atoi(os.Args[1])
 	val, _ := strconv.Atoi(os.Args[2])
