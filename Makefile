@@ -46,5 +46,5 @@ clean:
 config:
 	@$(SUDO) cp -r webclient/_deploy/etc/. /etc/.
 
-deploy: config supervisor nginx
+deploy: build config supervisor nginx
 	@echo $(DONE)
