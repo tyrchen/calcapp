@@ -169,19 +169,21 @@ func clear() {
 }
 
 func main() {
-	if len(os.Args) != 2 {
-		fmt.Fprintf(os.Stderr, "Usage: %s <index>", os.Args[0])
+	if len(os.Args) != 3 {
+		fmt.Fprintf(os.Stderr, "Usage: %s <port> <index>", os.Args[0])
 		os.Exit(1)
 	}
 
-	val, _ := strconv.Atoi(os.Args[1])
+	sport, _ := strconv.Atoi(os.Args[1])
+	val, _ := strconv.Atoi(os.Args[2])
+	port := uint(sport)
 	index := uint(val)
 
 	initValues(index)
 
 	http.Handle("/", websocket.Handler(calcHandler))
 
-	if err := http.ListenAndServe(":8210", nil); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
 }
