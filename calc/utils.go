@@ -1,6 +1,7 @@
 package calc
 
 import (
+	"fmt"
 	"math"
 )
 
@@ -64,6 +65,17 @@ func calc137WithSign(env *Env) (ret Point) {
 	return
 }
 
+func calc137forGzf(value Value, upgrade bool) Value {
+	if !upgrade {
+		return 1
+	}
+	ret := value*2 + 1
+	if ret > 63 {
+		return 1
+	}
+	return ret
+}
+
 /*
  * reverse sign if previous.t is true, not reverse otherwise
  */
@@ -116,5 +128,25 @@ func withZ(p *Point, inst Bpoint) {
 		p.T = true
 	} else {
 		p.T = false
+	}
+}
+
+func calcMultiply(data [COLS]Point) (ret bool) {
+	var hasz, hasnz Value
+	for i := 0; i < COLS; i++ {
+		if data[i].T {
+			hasz += Abs(data[i].V)
+		} else {
+			hasnz += Abs(data[i].V)
+		}
+	}
+
+	fmt.Print("hasnz - hasz = ", hasnz-hasz)
+	if hasnz-hasz > MUL_COND {
+		fmt.Println(" true")
+		return true
+	} else {
+		fmt.Println(" false")
+		return false
 	}
 }

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"strconv"
-	//"strings"
+	"strings"
 )
 
 const (
@@ -16,12 +16,15 @@ const (
 	BP_SLICE_END   = 58
 	BP_GAP         = 0xe1111189321
 	BP_TOTAL       = 37000
+	BP_ZG          = 30
 	BP_COLS        = 55 + 1
-	BP_FILENAME    = "/var/tmp/calcapp/bp/%s/basepoint%02d.dat"
+	BP_FILENAME    = "/var/data/calcapp/bp/%s/basepoint%02d.dat"
+	BP_ZG_FILENAME = "/var/data/calcapp/bp30.txt"
 )
 
 type Bp [BP_COLS]uint8
 type BpData [BP_TOTAL]Bp
+type BpZgData [BP_ZG]Bp
 
 func uint64ToBp(val uint64) []uint8 {
 	arr := make([]uint8, 0)
@@ -124,4 +127,23 @@ func LoadBpFile(index uint, origin bool) (values BpData) {
 		panic(err)
 	}
 	return
+}
+
+func LoadZgBp() (values BpZgData) {
+	bytes, _ := ioutil.ReadFile(BP_ZG_FILENAME)
+	content := string(bytes)
+	lines := strings.Split(content, "\n")
+
+	for i := 0; i < BP_ZG; i++ {
+		line := strings.TrimSpace(lines[i])
+		for j := 0; j < BP_COLS; j++ {
+			tmp, _ := strconv.Atoi(string(line[j]))
+			values[i][j] = uint8(tmp)
+		}
+	}
+	return values
+}
+
+func GetZgBp(index uint) (value Bp) {
+	return LoadZgBp()[index]
 }

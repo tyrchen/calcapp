@@ -10,6 +10,10 @@ const (
 	// for concurrency
 	CHUNKS     = 100
 	CHUNK_SIZE = GROUP_SIZE / CHUNKS
+
+	// for multiplier
+	MUL_COND = 600000
+	MUL_STOP = 63
 )
 
 type Bpoint uint8
@@ -29,7 +33,7 @@ type Env struct {
 }
 
 type BaseData struct {
-	Inst [COLS]Bpoint
+	//Inst [COLS]Bpoint
 	Bp   [COLS]Bpoint
 	Nbp  [COLS]Bpoint
 	Data [ROWS][COLS]Point
@@ -41,10 +45,15 @@ type BaseData struct {
 
 type GroupData struct {
 	Index uint
+	Gzm   Value
+	Gfm   Value
+	Bp    [COLS]Bpoint
 	Inst  [COLS]Bpoint
 	Data  [GROUP_SIZE]BaseData
 	Zg    [COLS]Point
 	Gz    [COLS]Point
+	Gzmm  [COLS]Point
 	Gf    [COLS]Point
+	Gfmm  [COLS]Point
 	Gf1   [COLS]Point
 }

@@ -38,7 +38,7 @@ func testBaseDataCalc(t *testing.T, data BaseData, insts string) {
 		data.Run(Bpoint(v), Value(i))
 	}
 
-	fmt.Println(data)
+	//fmt.Println(data)
 
 }
 
@@ -59,12 +59,11 @@ func TestBaseDataCalc(t *testing.T) {
 func TestGroupCalc(t *testing.T) {
 	data := new(GroupData)
 	runtime.GOMAXPROCS(8)
-	data.LoadBp(1)
-	data.Init()
+	data.Init(0)
 	for i, v := range utils.StringToBp(INST_FOR_TEST) {
 		data.Run(Bpoint(v), Value(i))
 	}
-	fmt.Println(data.Data[GROUP_SIZE-1])
+	//fmt.Println(data.Data[GROUP_SIZE-1])
 	fmt.Println(data.String())
 	/*
 		data.Clear()
@@ -79,4 +78,16 @@ func TestGroupCalc(t *testing.T) {
 		fmt.Println(data.Data[GROUP_SIZE-1])
 		fmt.Println(data.String())
 	*/
+}
+
+func TestMp(t *testing.T) {
+	data := new(GroupData)
+	runtime.GOMAXPROCS(8)
+
+	for g := 1; g < 2; g++ {
+		data.Init(uint(g))
+		for i, v := range utils.StringToBp(INST_FOR_TEST) {
+			data.Run(Bpoint(v), Value(i))
+		}
+	}
 }

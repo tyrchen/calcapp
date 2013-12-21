@@ -12,6 +12,7 @@ type chanData struct {
 	gf1 Value
 }
 
+// load bp for all the groups
 func (self *GroupData) LoadBp(index uint) {
 	var values utils.BpData
 
@@ -28,28 +29,48 @@ func (self *GroupData) LoadBp(index uint) {
 	}
 }
 
+func (self *GroupData) LoadSelfBp(index uint) {
+	bp := utils.GetZgBp(index)
+	for i := 0; i < COLS; i++ {
+		self.Bp[i] = Bpoint(bp[i])
+	}
+}
+
+func (self *GroupData) LoadMp(index uint) {
+	values := utils.LoadMpFile(index)
+	self.Gzm = Value(values.Gzm)
+	self.Gfm = Value(values.Gfm)
+}
+
 func (self *GroupData) Clear() {
 	*self = *new(GroupData)
 }
 
-func (self *GroupData) Init() {
-
+func (self *GroupData) Init(index uint) {
+	self.LoadBp(index)
+	self.LoadSelfBp(index)
+	self.LoadMp(index)
 	// init the col 0
-	for i := 0; i < GROUP_SIZE; i++ {
+	for i := 0; i < GROUP_SIZE-1; i++ {
 		self.Data[i].Init()
+		self.Zg[0].V += self.Data[i].Xg[0].V
+		self.Gz[0].V += self.Data[i].Gz[0].V
+		self.Gf[0].V += self.Data[i].Gf[0].V
+		self.Gf1[0].V += self.Data[i].Gf1[0].V
 	}
-	self.Zg[0].V = 1
-	self.Gz[0].V = 1
-	self.Gf1[0].V = -1
+	self.Gzmm[0].V = self.Gz[0].V * self.Gzm
+	self.Gfmm[0].V = self.Gf[0].V * self.Gfm
 }
 
 func (self *GroupData) Run(inst Bpoint, pos Value) {
-	self.Inst[pos] = inst
-	self.withZ(inst, pos)
+	new_inst := getNextBp(self.Bp[pos], inst)
+	self.Inst[pos] = new_inst
+	self.withZ(new_inst, pos)
 	self.calc(pos + 1)
 
 	if pos == COLS-2 {
 		self.SaveNewBp()
+		self.CalcMultiply()
 	}
 }
 
@@ -59,7 +80,9 @@ func (self *GroupData) withZ(inst Bpoint, pos Value) {
 	}
 	withZ(&self.Zg[pos], inst)
 	withZ(&self.Gz[pos], inst)
+	withZ(&self.Gzmm[pos], inst)
 	withZ(&self.Gf[pos], inst)
+	withZ(&self.Gfmm[pos], inst)
 	withZ(&self.Gf1[pos], inst)
 }
 
@@ -104,6 +127,9 @@ func (self *GroupData) calc(pos Value) {
 	self.Gf[pos].V -= self.Data[GROUP_SIZE-1].Gf[pos].V
 	self.Gf1[pos].V -= self.Data[GROUP_SIZE-1].Gf1[pos].V
 
+	self.Gzmm[pos].V = self.Gzm * self.Gz[pos].V
+	self.Gfmm[pos].V = self.Gfm * self.Gf[pos].V
+
 	/*
 		for i := 0; i < GROUP_SIZE; i++ {
 			self.Data[i].calc(pos)
@@ -124,4 +150,11 @@ func (self *GroupData) SaveNewBp() {
 		}
 	}
 	utils.SaveBpFile(self.Index, values)
+}
+
+func (self *GroupData) CalcMultiply() {
+	// calc gfm
+	self.Gzm = calc137forGzf(self.Gzm, calcMultiply(self.Gz))
+	self.Gfm = calc137forGzf(self.Gfm, calcMultiply(self.Gf))
+	utils.SaveMpFile(self.Index, utils.Multiplier{int(self.Gzm), int(self.Gfm)})
 }

@@ -31,7 +31,7 @@ func (self *BaseData) Run(inst Bpoint, pos Value) {
 }
 
 func (self *BaseData) withZ(inst Bpoint, pos Value) {
-	self.Inst[pos] = inst
+	//self.Inst[pos] = inst
 	self.Nbp[pos] = getNextBp(self.Bp[pos], inst)
 
 	for i := 0; i < ROWS; i++ {

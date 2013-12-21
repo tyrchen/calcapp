@@ -7,7 +7,10 @@
 </head>
 <body>
     <div class="container">
-        <h1>运算器 <button class="btn btn-primary calc-clear">清空</button></h1>
+        <h1>运算器 
+            <button class="btn btn-primary calc-clear">清空</button> 
+            <span class="multiplier" style="font-size:14px"></span>
+        </h1>
         <div id="calc-table" class="handsontable">
             
         </div>
@@ -55,6 +58,10 @@
                 switch(data.Method) {
                     case 'calc':
                         showData(data); break;
+                    case 'multiplier':
+                        showMultiplier(data); break;
+                    case 'bpzg':
+                        showBpZg(data); break;
                     //case 'xg':
                     //    showXg(data); break;
                     case 'close':
@@ -78,9 +85,21 @@
                     initDone = true;
                     continue;
                 }
-                for(var row=1; row<5; row++) {
-                    inst.setDataAtCell(row, col+data.Pos, formatPoint(data.Values[col][row-1]));
+                for(var row=2; row<9; row++) {
+                    inst.setDataAtCell(row, col+data.Pos, formatPoint(data.Values[col][row-2]));
                 }
+            }
+        }
+
+        function showMultiplier(data) {
+            var content = '中果正乘数: ' + data.Values[0] + ', 中果反乘数: ' + data.Values[0]
+            $('.multiplier').text(content)
+        }
+
+        function showBpZg(data) {
+            var inst = container.handsontable('getInstance');
+            for (var col=0; col<56; col++) {
+                inst.setDataAtCell(1, col, data.Values[col]);
             }
         }
 
@@ -102,11 +121,11 @@
             var lastCol = -1;
             container.handsontable({
                 minSpareRows: 1,
-                minRows: 5,//+ 17,
+                minRows: 10,//+ 17,
                 minCols: 55,
                 currentRowClassName: 'currentRow',
                 currentColClassName: 'currentCol',
-                rowHeaders: ['输入', '中果', '果正', '果反', '果反1', ''],
+                rowHeaders: ['输入', '基本点', '中输入', '中果', '果正', '果正x', '果反', '果反x', '果反1', ''],
                             //'输入', '基本点', '下基本点', '1', '2', '3', '4', '5', '6', '7', '8', '9',
                             //'小果', '果正', '果反', '果反1', ''],
                 colHeaders: _.range(1, 56),

@@ -18,13 +18,23 @@ const (
 type CalcData struct {
 	Method string
 	Pos    Value
-	Values [2][4]Point
+	Values [2][7]Point
 }
 
 type BaseDataValue struct {
 	Method string
 	Pos    Value
 	Values [2][BASE_DATA_VALUE_ROWS]Point
+}
+
+type MultiplierData struct {
+	Method string
+	Values [2]int
+}
+
+type BpZgData struct {
+	Method string
+	Values [COLS]Bpoint
 }
 
 var (
@@ -36,6 +46,8 @@ func calcHandler(ws *websocket.Conn) {
 
 	// send initial data
 	sendData(0, ws)
+	sendBpZg(ws)
+	sendMultiplier(ws)
 
 	for {
 		var reply string
@@ -67,6 +79,25 @@ func sendData(pos Value, ws *websocket.Conn) {
 	//wsSend(ws, string(b1))
 }
 
+func sendMultiplier(ws *websocket.Conn) {
+	var data MultiplierData
+	data.Method = "multiplier"
+	data.Values[0] = int(values.Gzm)
+	data.Values[1] = int(values.Gfm)
+	b, _ := json.Marshal(data)
+	wsSend(ws, string(b))
+}
+
+func sendBpZg(ws *websocket.Conn) {
+	var data BpZgData
+	data.Method = "bpzg"
+	for i := 0; i < COLS; i++ {
+		data.Values[i] = values.Bp[i]
+	}
+	b, _ := json.Marshal(data)
+	wsSend(ws, string(b))
+}
+
 func runCommand(ws *websocket.Conn, reply string) {
 	var v interface{}
 	json.Unmarshal([]byte(reply), &v)
@@ -94,7 +125,7 @@ func getBaseDataValue(pos Value) (ret BaseDataValue) {
 	ret.Pos = pos
 	ret.Method = "xg"
 	for i = 0; i < 2; i++ {
-		ret.Values[i][0] = Point{false, Value(data.Inst[pos+i])}
+		//ret.Values[i][0] = Point{false, Value(data.Inst[pos+i])}
 		ret.Values[i][1] = Point{false, Value(data.Bp[pos+i])}
 		ret.Values[i][2] = Point{false, Value(data.Nbp[pos+i])}
 
@@ -112,18 +143,23 @@ func getBaseDataValue(pos Value) (ret BaseDataValue) {
 }
 
 func getValues(pos Value) (ret CalcData) {
+	var i Value
 	ret.Method = "calc"
 	ret.Pos = pos
-	ret.Values[0] = [4]Point{values.Zg[pos], values.Gz[pos], values.Gf[pos], values.Gf1[pos]}
-	ret.Values[1] = [4]Point{values.Zg[pos+1], values.Gz[pos+1], values.Gf[pos+1], values.Gf1[pos+1]}
+
+	for i = 0; i < 2; i++ {
+		inst := Point{false, Value(values.Inst[pos+i])}
+		ret.Values[i] = [7]Point{
+			inst, values.Zg[pos+i], values.Gz[pos+i], values.Gzmm[pos+i],
+			values.Gf[pos+i], values.Gfmm[pos+i], values.Gf1[pos+i]}
+	}
 
 	return ret
 }
 
 func initValues(index uint) {
 	values = new(GroupData)
-	values.LoadBp(index)
-	values.Init()
+	values.Init(index)
 }
 
 func clear() {

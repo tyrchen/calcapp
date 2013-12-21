@@ -40,7 +40,7 @@ func (self *BaseData) showValue(start int) (arr []string) {
 
 	arr = append(arr, printBp("Col", title))
 	arr = append(arr, fmt.Sprintln(strings.Repeat("-", 145)))
-	arr = append(arr, printBp("Inst", self.Inst[start:end]))
+	//arr = append(arr, printBp("Inst", self.Inst[start:end]))
 	arr = append(arr, printBp("BP", self.Bp[start:end]))
 	arr = append(arr, printBp("New BP", self.Nbp[start:end]))
 
@@ -99,10 +99,17 @@ func (self *GroupData) showValue(start int) (arr []string) {
 	arr = append(arr, printBp("Col", title))
 	arr = append(arr, fmt.Sprintln(strings.Repeat("-", 145)))
 
+	arr = append(arr, printBp("Bp", self.Bp[start:end]))
 	arr = append(arr, printBp("Inst", self.Inst[start:end]))
 
 	arr = append(arr, printPoint("ZG", self.Zg[start:end]))
+
 	arr = append(arr, printPoint("GZ", self.Gz[start:end]))
+	arr = append(arr, printPoint("GZMM", self.Gzmm[start:end]))
+
+	arr = append(arr, printPoint("GF", self.Gf[start:end]))
+	arr = append(arr, printPoint("GFMM", self.Gfmm[start:end]))
+
 	arr = append(arr, printPoint("GF1", self.Gf1[start:end]))
 
 	return arr

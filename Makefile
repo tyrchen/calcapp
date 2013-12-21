@@ -3,7 +3,7 @@ DONE="\n$(CHECK) Done.\n"
 
 GO=go
 BIN=./bin
-DATA=/var/tmp/calcapp
+DATA=/var/data/calcapp
 PACKAGES=network utils calc
 PACKAGE_PATHS=$(patsubst %,./%, $(PACKAGES))
 TARGETS=$(patsubst %.go,$(BIN)/%,$(wildcard *.go))
@@ -24,7 +24,7 @@ packages:
 
 
 dir:
-	@mkdir -p $(DATA)/bp/origin $(DATA)/bp/new
+	@mkdir -p $(DATA)/bp/origin $(DATA)/bp/new $(DATA)/mp
 	@mkdir -p $(DATA)/mac
 
 clean:
