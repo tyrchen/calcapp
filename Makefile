@@ -1,6 +1,7 @@
 CHECK=\033[32m✔\033[39m
 DONE="\n$(CHECK) Done.\n"
 
+ECHO=/bin/echo
 SUDO=/usr/bin/sudo
 SUPERVISORCTL=/usr/bin/supervisorctl
 GO=go
