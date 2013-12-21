@@ -1,12 +1,6 @@
 server {
- listen      80;
- server_name calc.com;
- rewrite     ^   https://$server_name$request_uri? permanent;
-}
-
-server {
   listen 80;
-  server_name zg.com;
+  server_name calc.com;
 
   set $current_root "/home/wanggang/go/src/calcapp/webclient";
   client_max_body_size 128m;
