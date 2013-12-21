@@ -12,9 +12,10 @@ const (
 	CHUNK_SIZE = GROUP_SIZE / CHUNKS
 
 	// for multiplier
-	MUL_COND = 600000
-	MUL_STOP = 63
-	ZG_NUM   = 10
+	MUL_COND    = 600000
+	MUL_STOP    = 63
+	ZG_NUM      = 10
+	ZG_NUM_SHOW = 2
 )
 
 type Bpoint uint8
