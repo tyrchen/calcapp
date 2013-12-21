@@ -1,6 +1,6 @@
 server {
   listen 80;
-  server_name calc.com;
+  server_name wg.com;
 
   set $current_root "/home/wanggang/go/src/calcapp/webclient";
   client_max_body_size 128m;
