@@ -154,6 +154,8 @@ func getValues(pos Value) (ret CalcData) {
 			values.Gf[pos+i], values.Gfmm[pos+i], values.Gf1[pos+i]}
 	}
 
+	//fmt.Printf("%v\n", values)
+
 	return ret
 }
 

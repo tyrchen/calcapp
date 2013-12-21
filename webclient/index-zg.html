@@ -9,8 +9,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>运算器 
-            <button class="btn btn-primary calc-clear">清空</button> 
+        <h1>中果运算器 
+            <button class="btn btn-primary calc-clear">关闭</button> 
             <span class="multiplier" style="font-size:14px"></span>
         </h1>
         <div id="calc-table" class="handsontable">
@@ -33,6 +33,7 @@
             initTable(container);
             $('.calc-clear').on('click', function(e) {
                 sock.send(JSON.stringify({'method': 'close'}));
+                location.reload();
             });
         });
 
@@ -94,7 +95,7 @@
         }
 
         function showMultiplier(data) {
-            var content = '中果正乘数: ' + data.Values[0] + ', 中果反乘数: ' + data.Values[0]
+            var content = '中果正乘数: ' + data.Values[0] + ', 中果反乘数: ' + data.Values[1]
             $('.multiplier').text(content)
         }
 
@@ -145,11 +146,17 @@
                     if (e.keyCode == 49 || e.keyCode == 48) {
                         var col = selection[1];
                         if (col - lastCol == 1) {
+                            e.stopImmediatePropagation();
                             var inst = e.keyCode - 48;
                             send({method: 'calc', pos: col, inst: inst});
                             lastCol = col;
+                            instance.setDataAtCell(0, col, inst);
+                            container.handsontable("selectCell", 0, col+1);
+                            e.preventDefault();
                         }
                     }
+
+                    
                 }
             });
         }
