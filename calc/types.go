@@ -14,7 +14,7 @@ const (
 	// for multiplier
 	MUL_COND    = 600000
 	MUL_STOP    = 63
-	ZG_NUM      = 30
+	ZG_NUM      = 60
 	ZG_NUM_SHOW = 0
 )
 

@@ -16,10 +16,10 @@ const (
 	BP_SLICE_END   = 58
 	BP_GAP         = 0xe1111189321
 	BP_TOTAL       = 37000
-	BP_ZG          = 30
+	BP_ZG          = 60
 	BP_COLS        = 55 + 1
 	BP_FILENAME    = "/var/data/calcapp/bp/%s/basepoint%02d.dat"
-	BP_ZG_FILENAME = "/var/data/calcapp/bp30.txt"
+	BP_ZG_FILENAME = "/var/data/calcapp/bpzg.txt"
 )
 
 type Bp [BP_COLS]uint8
@@ -80,6 +80,8 @@ func GenerateBpFiles(max uint) {
 	for i = 0; i < max; i++ {
 		filename := GetFileName(i, true)
 		saveBpFile(filename, values_list[i])
+		filename1 := GetFileName(i+30, true)
+		saveBpFile(filename1, values_list[i])
 	}
 }
 
