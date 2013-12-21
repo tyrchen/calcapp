@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"runtime"
 	"strconv"
 )
 
@@ -163,8 +164,8 @@ func initValues() {
 }
 
 func clear() {
-	values.Clear()
 	initValues()
+	runtime.GC()
 }
 
 func main() {
