@@ -49,6 +49,15 @@ func (self *BigData) calcDgValues(pos Value) {
 	}
 }
 
+func (self *BigData) CalcDelta() (ret [5]Value) {
+	ret[0] = calcDelta(self.Gz)
+	ret[1] = calcDelta(self.Gzmm)
+	ret[2] = calcDelta(self.Gf)
+	ret[3] = calcDelta(self.Gfmm)
+	ret[4] = calcDelta(self.Gf1)
+	return ret
+}
+
 func (self *BigData) Init() {
 	var i uint
 	for i = 0; i < ZG_NUM; i++ {

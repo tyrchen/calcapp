@@ -11,8 +11,11 @@
     <div class="container">
         <h1>大果运算器 
             <button class="btn btn-primary calc-clear">关闭</button> 
-            <span class="multiplier" style="font-size:14px"></span>
+            <span class="delta" style="font-size:20px"></span>
         </h1>
+        <!--
+        <input type=”text” class=”gspeech” name=”test” speech=”speech” x-webkit-speech=”x-webkit-speech” x-webkit-grammar=”builtin:translate” />
+        -->
         <div id="calc-table" class="handsontable">
             
         </div>
@@ -27,8 +30,8 @@
         var wsuri = "ws://127.0.0.1:8211";
         var container = $('#calc-table');
         var initDone = false;
-        var ZG_NUM = 2;
-        var COLS = 56;
+        var ZG_NUM = 0;
+        var COLS = 55;
         var ZG_START = 8;
         var ZG_SIZE = 9;
 
@@ -67,6 +70,8 @@
                         showData(data); break;
                     case 'bpzg':
                         showBpZg(data); break;
+                    case 'delta':
+                        showDelta(data); break;
                     case 'close':
                         container.handsontable('clear'); break;
                 }
@@ -113,6 +118,12 @@
                     inst.setDataAtCell(ZG_START+i*ZG_SIZE, col, data.Values[i][col]);
                 }
             }
+        }
+
+        function showDelta(data) {
+            var str = '果正: ' + data.Values[0] + ', 果正乘数: ' + data.Values[1] + ', 果反' + data.Values[2] +
+                        ', 果反乘数: ' + data.Values[3] + ', 果反1: ' + data.Values[4]
+            $('.delta').text(str)
         }
 
         function initTable(container) {

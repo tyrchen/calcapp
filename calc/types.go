@@ -14,8 +14,8 @@ const (
 	// for multiplier
 	MUL_COND    = 600000
 	MUL_STOP    = 63
-	ZG_NUM      = 2
-	ZG_NUM_SHOW = 2
+	ZG_NUM      = 30
+	ZG_NUM_SHOW = 0
 )
 
 type Bpoint uint8

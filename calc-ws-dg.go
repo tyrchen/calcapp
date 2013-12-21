@@ -42,6 +42,11 @@ type BpZgData struct {
 	Values [ZG_NUM_SHOW][COLS]Bpoint
 }
 
+type BigDelta struct {
+	Method string
+	Values [5]Value
+}
+
 var (
 	values *BigData
 )
@@ -50,7 +55,7 @@ func calcHandler(ws *websocket.Conn) {
 	var err error
 
 	// send initial data
-	sendData(0, ws)
+	sendData(ws, 0)
 	sendBpZg(ws)
 
 	for {
@@ -75,7 +80,7 @@ func wsSend(ws *websocket.Conn, msg string) {
 	}
 }
 
-func sendData(pos Value, ws *websocket.Conn) {
+func sendData(ws *websocket.Conn, pos Value) {
 	b, _ := json.Marshal(getValues(pos))
 	wsSend(ws, string(b))
 }
@@ -100,12 +105,25 @@ func runCommand(ws *websocket.Conn, reply string) {
 	case "calc":
 		inst, pos := Bpoint(m["inst"].(float64)), Value(m["pos"].(float64))
 		calc(inst, pos)
-		sendData(pos, ws)
+		sendData(ws, pos)
+
+		if pos == COLS-2 {
+			ret := values.CalcDelta()
+			sendDelta(ws, ret)
+		}
 
 	case "close":
 		clear()
 		wsSend(ws, `{"method":"close","value":"true"}`)
 	}
+}
+
+func sendDelta(ws *websocket.Conn, v [5]Value) {
+	var data BigDelta
+	data.Method = "delta"
+	data.Values = v
+	b, _ := json.Marshal(data)
+	wsSend(ws, string(b))
 }
 
 func calc(inst Bpoint, pos Value) {

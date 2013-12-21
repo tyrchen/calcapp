@@ -1,7 +1,6 @@
 package calc
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -137,7 +136,7 @@ func withZ(p *Point, inst Bpoint) {
 	}
 }
 
-func calcMultiply(data [COLS]Point) (ret bool) {
+func calcDelta(data [COLS]Point) (ret Value) {
 	var hasz, hasnz Value
 	for i := 0; i < COLS; i++ {
 		if data[i].T {
@@ -146,13 +145,14 @@ func calcMultiply(data [COLS]Point) (ret bool) {
 			hasnz += Abs(data[i].V)
 		}
 	}
+	ret = hasnz - hasz
+	return ret
+}
 
-	fmt.Print("hasnz - hasz = ", hasnz-hasz)
-	if hasnz-hasz > MUL_COND {
-		fmt.Println(" true")
+func calcMultiply(data [COLS]Point) (ret bool) {
+	if calcDelta(data) > MUL_COND {
 		return true
 	} else {
-		fmt.Println(" false")
 		return false
 	}
 }
