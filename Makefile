@@ -26,7 +26,7 @@ packages:
 
 supervisor:
 	@$(ECHO) "\nUpdate supervisor configuration..."
-	@$(SUDO) $(SUPERVISORCTL) reread
+	@$(SUDO) $(SUPERVISORCTL) reload
 
 nginx:
 	@$(ECHO) "\nRestart nginx..."
