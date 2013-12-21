@@ -11,4 +11,3 @@ bundles/
 .git/
 *.dat
 bin/*
-webclient

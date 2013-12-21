@@ -63,8 +63,8 @@ func sendData(pos Value, ws *websocket.Conn) {
 	b, _ := json.Marshal(getValues(pos))
 	wsSend(ws, string(b))
 	// send one of the BaseData
-	b1, _ := json.Marshal(getBaseDataValue(pos))
-	wsSend(ws, string(b1))
+	//b1, _ := json.Marshal(getBaseDataValue(pos))
+	//wsSend(ws, string(b1))
 }
 
 func runCommand(ws *websocket.Conn, reply string) {
