@@ -14,6 +14,7 @@ const (
 	// for multiplier
 	MUL_COND = 600000
 	MUL_STOP = 63
+	ZG_NUM   = 10
 )
 
 type Bpoint uint8
@@ -56,4 +57,15 @@ type GroupData struct {
 	Gf    [COLS]Point
 	Gfmm  [COLS]Point
 	Gf1   [COLS]Point
+}
+
+type BigData struct {
+	Inst [COLS]Bpoint
+	Dg   [COLS]Point
+	Gz   [COLS]Point
+	Gzmm [COLS]Point
+	Gf   [COLS]Point
+	Gfmm [COLS]Point
+	Gf1  [COLS]Point
+	Data [ZG_NUM]GroupData
 }

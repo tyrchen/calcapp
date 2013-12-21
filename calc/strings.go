@@ -18,6 +18,7 @@ func (self Point) String() string {
 	}
 }
 
+// for base data
 func (self *BaseData) showValue(start int) (arr []string) {
 	length := 12
 	end := start + length
@@ -76,6 +77,7 @@ func (self BaseData) String() string {
 
 }
 
+// for group data
 func (self *GroupData) showValue(start int) (arr []string) {
 	length := 12
 	end := start + length
@@ -116,6 +118,54 @@ func (self *GroupData) showValue(start int) (arr []string) {
 }
 
 func (self *GroupData) String() string {
+	arr := self.showValue(0)
+	ret := strings.Join(arr, "") + "\n"
+
+	arr = self.showValue(35)
+	ret += strings.Join(arr, "")
+	return ret
+}
+
+// for big data
+func (self *BigData) showValue(start int) (arr []string) {
+	length := 12
+	end := start + length
+	template := "%-10s %10s %10s %10s %10s %10s %10s %10s %10s %10s %10s %10s %10s\n"
+
+	title := make([]Bpoint, 0)
+
+	for i := start; i < end; i++ {
+		title = append(title, Bpoint(i))
+	}
+
+	printBp := func(title string, val []Bpoint) string {
+		return fmt.Sprintf(template, title, val[0], val[1], val[2], val[3],
+			val[4], val[5], val[6], val[7], val[8], val[9], val[10], val[11])
+	}
+	printPoint := func(title string, val []Point) string {
+		return fmt.Sprintf(template, title, val[0], val[1], val[2], val[3],
+			val[4], val[5], val[6], val[7], val[8], val[9], val[10], val[11])
+	}
+
+	arr = append(arr, printBp("Col", title))
+	arr = append(arr, fmt.Sprintln(strings.Repeat("-", 145)))
+
+	arr = append(arr, printBp("Inst", self.Inst[start:end]))
+
+	arr = append(arr, printPoint("DG", self.Dg[start:end]))
+
+	arr = append(arr, printPoint("GZ", self.Gz[start:end]))
+	arr = append(arr, printPoint("GZMM", self.Gzmm[start:end]))
+
+	arr = append(arr, printPoint("GF", self.Gf[start:end]))
+	arr = append(arr, printPoint("GFMM", self.Gfmm[start:end]))
+
+	arr = append(arr, printPoint("GF1", self.Gf1[start:end]))
+
+	return arr
+}
+
+func (self *BigData) String() string {
 	arr := self.showValue(0)
 	ret := strings.Join(arr, "") + "\n"
 
