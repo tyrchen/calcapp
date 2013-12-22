@@ -4,7 +4,16 @@
     <title>大果运算器</title>
     <link rel="stylesheet" media="screen" href="assets/css/app.min.css">
     <link rel="stylesheet" media="screen" href="assets/css/jquery.handsontable.full.css">
-
+    <style>
+        .handsontable td {
+            line-height: 15px;
+            height: 36px;
+            font-size: 20px;
+            overflow: hidden;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+    </style>
 
 </head>
 <body>
@@ -80,7 +89,7 @@
         }
 
         function formatPoint(p) {
-            if (p.T) return 'z' + p.V;
+            if (p.T) return '<b>z' + p.V +'</b>';
             return p.V;
         }
 
@@ -128,6 +137,18 @@
 
         function initTable(container) {
             var lastCol = -1;
+
+            var zRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+                var escaped = Handsontable.helper.stringify(value);
+                td.innerHTML = escaped;
+                return td;
+            };
+            var columnRenderers = [];
+
+            for(var i=0; i<COLS; i++) {
+                columnRenderers.push({renderer: zRenderer});
+            }
+
             var rowHeaders = ['输入', '总果', '果正', '果正x', '果反', '果反x', '果反1', ''];
             for (var i=0; i<ZG_NUM; i++) {
                 var s = i+1;
@@ -144,15 +165,15 @@
                 currentColClassName: 'currentCol',
                 rowHeaders: rowHeaders,
                 colHeaders: _.range(1, 56),
+                columns: columnRenderers,
+                scrollH: 'none',
                 colWidths: _.times(55, function(n) { return 90;}),
-                /*
                 cells: function (row, col, prop) {
                     var cellProperties = {};
                     if (row != 0) cellProperties.readOnly = true;
                     
                     return cellProperties;
                 },
-                */
                 beforeKeyDown: function (e) {
                     var instance = container.handsontable('getInstance')
                       , selection = instance.getSelected();

@@ -4,8 +4,7 @@
     <title>中果运算器</title>
     <link rel="stylesheet" media="screen" href="assets/css/app.min.css">
     <link rel="stylesheet" media="screen" href="assets/css/jquery.handsontable.full.css">
-
-
+    <link rel="stylesheet" media="screen" href="assets/css/custom.css">
 </head>
 <body>
     <div class="container">
@@ -77,7 +76,7 @@
 
         function formatPoint(p) {
             //console.log(p);
-            if (p.T) return 'z' + p.V;
+            if (p.T) return '<b>z' + p.V +'</b>';
             return p.V;
         }
 
@@ -89,7 +88,9 @@
                     continue;
                 }
                 for(var row=2; row<9; row++) {
-                    inst.setDataAtCell(row, col+data.Pos, formatPoint(data.Values[col][row-2]));
+                    var p = data.Values[col][row-2]
+                    var v = formatPoint(p)
+                    container.handsontable('setDataAtCell', row, col+data.Pos, formatPoint(p));
                 }
             }
         }
@@ -122,6 +123,17 @@
 
         function initTable(container) {
             var lastCol = -1;
+            var zRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+                var escaped = Handsontable.helper.stringify(value);
+                td.innerHTML = escaped;
+                return td;
+            };
+            var columnRenderers = [];
+
+            for(var i=0; i<55; i++) {
+                columnRenderers.push({renderer: zRenderer});
+            }
+            
             container.handsontable({
                 minSpareRows: 1,
                 minRows: 10,//+ 17,
@@ -134,12 +146,15 @@
                 colHeaders: _.range(1, 56),
                 colWidths: _.times(55, function(n) { return 90;}),
                 scrollH: 'none',
+                columns: columnRenderers,
+                /*
                 cells: function (row, col, prop) {
                     var cellProperties = {};
                     if (row != 0) cellProperties.readOnly = true;
-                    
+                    console.log(row, col, prop);
                     return cellProperties;
                 },
+                */
                 beforeKeyDown: function (e) {
                     var instance = container.handsontable('getInstance')
                       , selection = instance.getSelected();
