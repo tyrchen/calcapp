@@ -67,22 +67,24 @@ func (self *BigData) Init() {
 }
 
 func (self *BigData) Run(inst Bpoint, pos Value) {
+	self.withZ(inst, pos)
+	self.calc(pos + 1)
+}
+
+func (self *BigData) calc(pos Value) {
 	var j Value
-	next_pos := pos + 1
 	chn := make(chan chanBigData, ZG_NUM)
 
-	self.Inst[pos] = inst
-
 	worker := func(i Value, chn chan chanBigData) {
-		self.Data[i].Run(inst, pos)
-		bp := self.Data[i].Bp[next_pos]
+		self.Data[i].calc(pos)
+		bp := self.Data[i].Bp[pos]
 		chn <- chanBigData{
-			self.Data[i].Zg[next_pos].V,
-			signFollow(self.Data[i].Gz[next_pos].V, bp),
-			signFollow(self.Data[i].Gzmm[next_pos].V, bp),
-			signFollow(self.Data[i].Gf[next_pos].V, bp),
-			signFollow(self.Data[i].Gfmm[next_pos].V, bp),
-			signFollow(self.Data[i].Gf1[next_pos].V, bp),
+			self.Data[i].Zg[pos].V,
+			signFollow(self.Data[i].Gz[pos].V, bp),
+			signFollow(self.Data[i].Gzmm[pos].V, bp),
+			signFollow(self.Data[i].Gf[pos].V, bp),
+			signFollow(self.Data[i].Gfmm[pos].V, bp),
+			signFollow(self.Data[i].Gf1[pos].V, bp),
 		}
 
 	}
@@ -94,21 +96,23 @@ func (self *BigData) Run(inst Bpoint, pos Value) {
 	for val := range chn {
 		received++
 
-		self.Dg[next_pos].V += val.zg
-		self.Gz[next_pos].V += val.gz
-		self.Gzmm[next_pos].V += val.gzmm
-		self.Gf[next_pos].V += val.gf
-		self.Gfmm[next_pos].V += val.gfmm
-		self.Gf1[next_pos].V += val.gf1
+		self.Dg[pos].V += val.zg
+		self.Gz[pos].V += val.gz
+		self.Gzmm[pos].V += val.gzmm
+		self.Gf[pos].V += val.gf
+		self.Gfmm[pos].V += val.gfmm
+		self.Gf1[pos].V += val.gf1
 		if received == ZG_NUM {
 			close(chn)
 		}
 	}
-
-	self.withZ(inst, pos)
 }
 
 func (self *BigData) withZ(inst Bpoint, pos Value) {
+	self.Inst[pos] = inst
+	for i := 0; i < ZG_NUM; i++ {
+		self.Data[i].withZ(inst, pos)
+	}
 	withZ(&self.Dg[pos], inst)
 	withZ(&self.Gz[pos], inst)
 	withZ(&self.Gzmm[pos], inst)

@@ -69,18 +69,13 @@ func (self *GroupData) CalcGmm(pos Value) {
 }
 
 func (self *GroupData) Run(inst Bpoint, pos Value) {
-	new_inst := getNextBp(self.Bp[pos], inst)
-	self.Inst[pos] = new_inst
-	self.withZ(new_inst, pos)
+	self.withZ(inst, pos)
 	self.calc(pos + 1)
-
-	if pos == COLS-2 {
-		self.SaveNewBp()
-		self.CalcMultiply()
-	}
 }
 
-func (self *GroupData) withZ(inst Bpoint, pos Value) {
+func (self *GroupData) withZ(old_inst Bpoint, pos Value) {
+	inst := getNextBp(self.Bp[pos], old_inst)
+	self.Inst[pos] = inst
 	for i := 0; i < GROUP_SIZE; i++ {
 		self.Data[i].withZ(inst, pos)
 	}
@@ -90,6 +85,11 @@ func (self *GroupData) withZ(inst Bpoint, pos Value) {
 	withZ(&self.Gf[pos], inst)
 	withZ(&self.Gfmm[pos], inst)
 	withZ(&self.Gf1[pos], inst)
+
+	if pos == COLS-2 {
+		self.SaveNewBp()
+		self.CalcMultiply()
+	}
 }
 
 func (self *GroupData) calc(pos Value) {
