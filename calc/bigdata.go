@@ -106,6 +106,14 @@ func (self *BigData) calc(pos Value) {
 			close(chn)
 		}
 	}
+	/*
+		self.Dg[pos].T = false
+		self.Gz[pos].T = false
+		self.Gzmm[pos].T = false
+		self.Gf[pos].T = false
+		self.Gfmm[pos].T = false
+		self.Gf1[pos].T = false
+	*/
 }
 
 func (self *BigData) withZ(inst Bpoint, pos Value) {

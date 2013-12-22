@@ -25,6 +25,7 @@
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/js/lodash.min.js"></script>
     <script src="assets/js/jquery.handsontable.full.js"></script>
+    <script src="assets/js/reconnecting-websocket.js"></script>
 
     <script language="javascript">
         var sock = null;
@@ -53,7 +54,7 @@
         };
 
         function initWebsocket() {
-            sock = new WebSocket(wsuri);
+            sock = new ReconnectingWebSocket(wsuri);
 
             sock.onopen = function() {
                 console.log("connected to " + wsuri);

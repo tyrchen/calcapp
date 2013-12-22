@@ -8,7 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
+	//"os/exec"
 	"runtime"
 	"strconv"
 )
@@ -167,7 +167,8 @@ func initValues() {
 func clear() {
 	//initValues()
 	//runtime.GC()
-	exec.Command("sudo supervisorctl", "reload").Run()
+	//exec.Command("sudo supervisorctl restart ").Run()
+	os.Exit(1)
 }
 
 func main() {
