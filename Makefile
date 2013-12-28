@@ -46,3 +46,6 @@ config:
 
 deploy: build config supervisor nginx
 	@echo $(DONE)
+
+cloc:
+	@cloc . --exclude-dir=webclient/assets
