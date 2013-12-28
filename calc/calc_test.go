@@ -10,6 +10,8 @@ import (
 const (
 	BP_FOR_TEST   = "10001010100111101100000111010100100011111100011100111111"
 	INST_FOR_TEST = "10011111110000101101101010011111100110010010011111000000"
+	INST_ALL_ONE  = "11111111111111111111111111111111111111111111111111111111"
+	INST_ALL_ZERO = "00000000000000000000000000000000000000000000000000000000"
 )
 
 func getEnv(bp Bpoint, currentCol Value, last Point) (env *Env) {
@@ -92,4 +94,53 @@ func TestBigData(t *testing.T) {
 		}
 	}
 	fmt.Println(data.String())
+}
+
+func testThreeSome(t *testing.T, up [COLS]Point, inst string) {
+	data := new(ThreeSome)
+	data.Up = up
+	data.Init(up[0])
+	col := 0
+	for i, v := range utils.StringToBp(inst) {
+		data.Run(Bpoint(v), Value(i))
+		col++
+		if col >= COLS-1 {
+			break
+		}
+	}
+	fmt.Println(data.String())
+}
+
+func TestThreeSome(t *testing.T) {
+	var up [COLS]Point
+
+	up = [COLS]Point{
+		{false, 10}, {true, -20}, {false, 10}, {true, -20}, {false, 10}, {true, -20},
+		{false, 10}, {true, -20}, {false, 10}, {true, -20}, {false, 10}, {true, -20},
+		{false, 10}, {true, -20}, {false, 10}, {true, -20}, {false, 10}, {true, -20},
+		{false, 10}, {true, -20}, {false, 10}, {true, -20}, {false, 10}, {true, -20},
+		{false, 10}, {true, -20}, {false, 10}, {true, -20}, {false, 10}, {true, -20},
+		{false, 10}, {true, -20}, {false, 10}, {true, -20}, {false, 10}, {true, -20},
+		{false, 10}, {true, -20}, {false, 10}, {true, -20}, {false, 10}, {true, -20},
+		{false, 10}, {true, -20}, {false, 10}, {true, -20}, {false, 10}, {true, -20},
+		{false, 10}, {true, -20}, {false, 10}, {true, -20}, {false, 10}, {true, -20},
+		{false, 10}, {true, -20},
+	}
+	testThreeSome(t, up, INST_FOR_TEST)
+
+	up = [COLS]Point{
+		{true, 10}, {false, 20}, {true, 10}, {true, 20}, {false, 10}, {true, 20},
+		{true, 10}, {false, 20}, {true, 10}, {true, 20}, {false, 10}, {true, 20},
+		{true, 10}, {false, 20}, {true, 10}, {true, 20}, {false, 10}, {true, 20},
+		{true, 10}, {false, 20}, {true, 10}, {true, 20}, {false, 10}, {true, 20},
+		{true, 10}, {false, 20}, {true, 10}, {true, 20}, {false, 10}, {true, 20},
+		{true, 10}, {true, -20}, {true, 10}, {true, -20}, {true, 10}, {true, -20},
+		{true, 10}, {true, -20}, {true, 10}, {true, -20}, {true, 10}, {true, -20},
+		{true, 10}, {true, -20}, {true, 10}, {true, -20}, {true, 10}, {true, -20},
+		{true, 10}, {true, -20}, {true, 10}, {true, -20}, {true, 10}, {true, -20},
+		{false, 10}, {true, -20},
+	}
+	testThreeSome(t, up, INST_ALL_ONE)
+	testThreeSome(t, up, INST_ALL_ZERO)
+
 }

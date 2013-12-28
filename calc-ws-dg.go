@@ -23,13 +23,23 @@ type ZgData struct {
 	Gf1  Point
 }
 
+type DgTsData struct {
+	Up  Point
+	V1  Point
+	V2  Point
+	V3  Point
+	Sum Point
+}
+
 type DgData struct {
-	Dg   Point
-	Gz   Point
-	Gzmm Point
-	Gf   Point
-	Gfmm Point
-	Gf1  Point
+	Dg      Point
+	Gz      Point
+	Gzmm    Point
+	Gf      Point
+	Gfmm    Point
+	Gf1     Point
+	TsValue Point
+	TsData  [THREESOME_NUM]DgTsData
 }
 
 type CalcData struct {
@@ -144,6 +154,15 @@ func getValues(pos Value) (ret CalcData) {
 		ret.Dg[i].Gf = values.Gf[i+pos]
 		ret.Dg[i].Gfmm = values.Gfmm[i+pos]
 		ret.Dg[i].Gf1 = values.Gf1[i+pos]
+		ret.Dg[i].TsValue = values.TsValue[i+pos]
+
+		for k := 0; k < THREESOME_NUM_SHOW; k++ {
+			ret.Dg[i].TsData[k].Up = values.TsData[k].Up[i+pos]
+			ret.Dg[i].TsData[k].V1 = values.TsData[k].V1[i+pos]
+			ret.Dg[i].TsData[k].V2 = values.TsData[k].V2[i+pos]
+			ret.Dg[i].TsData[k].V3 = values.TsData[k].V3[i+pos]
+			ret.Dg[i].TsData[k].Sum = values.TsData[k].Sum[i+pos]
+		}
 
 		for j := 0; j < ZG_NUM_SHOW; j++ {
 			ret.Zg[i][j].Inst = values.Data[j].Inst[i+pos]

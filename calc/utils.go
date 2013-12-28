@@ -118,6 +118,22 @@ func bsign(bp Bpoint) Value {
 	}
 }
 
+func sign(val Point) Value {
+	if val.V > 0 {
+		return 1
+	} else {
+		return -1
+	}
+}
+
+func zsign(val Point) Value {
+	if val.T {
+		return 1
+	} else {
+		return -1
+	}
+}
+
 func pointToBp(p Point) Bpoint {
 	if p.V > 0 {
 		return 1

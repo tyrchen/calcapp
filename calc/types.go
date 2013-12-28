@@ -14,8 +14,12 @@ const (
 	// for multiplier
 	MUL_COND    = 600000
 	MUL_STOP    = 63
-	ZG_NUM      = 60
+	ZG_NUM      = 1
 	ZG_NUM_SHOW = 0
+
+	// threesome total num
+	THREESOME_NUM      = 9
+	THREESOME_NUM_SHOW = 2
 )
 
 type Bpoint uint8
@@ -60,13 +64,23 @@ type GroupData struct {
 	Gf1   [COLS]Point
 }
 
+type ThreeSome struct {
+	Up  [COLS]Point
+	V1  [COLS]Point
+	V2  [COLS]Point
+	V3  [COLS]Point
+	Sum [COLS]Point
+}
+
 type BigData struct {
-	Inst [COLS]Bpoint
-	Dg   [COLS]Point
-	Gz   [COLS]Point
-	Gzmm [COLS]Point
-	Gf   [COLS]Point
-	Gfmm [COLS]Point
-	Gf1  [COLS]Point
-	Data [ZG_NUM]GroupData
+	Inst    [COLS]Bpoint
+	Dg      [COLS]Point
+	Gz      [COLS]Point
+	Gzmm    [COLS]Point
+	Gf      [COLS]Point
+	Gfmm    [COLS]Point
+	Gf1     [COLS]Point
+	Data    [ZG_NUM]GroupData
+	TsValue [COLS]Point
+	TsData  [THREESOME_NUM]ThreeSome
 }

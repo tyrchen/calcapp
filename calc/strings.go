@@ -128,6 +128,7 @@ func (self *GroupData) String() string {
 
 // for big data
 func (self *BigData) showValue(start int) (arr []string) {
+	var j Value
 	length := 12
 	end := start + length
 	template := "%-10s %10s %10s %10s %10s %10s %10s %10s %10s %10s %10s %10s %10s\n"
@@ -161,6 +162,15 @@ func (self *BigData) showValue(start int) (arr []string) {
 	arr = append(arr, printPoint("GFMM", self.Gfmm[start:end]))
 
 	arr = append(arr, printPoint("GF1", self.Gf1[start:end]))
+	arr = append(arr, printPoint("TS", self.TsValue[start:end]))
+
+	for j = 0; j < THREESOME_NUM_SHOW; j++ {
+		arr = append(arr, printPoint("Up", self.TsData[j].Up[start:end]))
+		arr = append(arr, printPoint("V1", self.TsData[j].V1[start:end]))
+		arr = append(arr, printPoint("V2", self.TsData[j].V2[start:end]))
+		arr = append(arr, printPoint("V3", self.TsData[j].V3[start:end]))
+		arr = append(arr, printPoint("Sum", self.TsData[j].Sum[start:end]))
+	}
 
 	return arr
 }
@@ -171,5 +181,47 @@ func (self *BigData) String() string {
 
 	arr = self.showValue(35)
 	ret += strings.Join(arr, "")
+	return ret
+}
+
+// for threesome
+func (self *ThreeSome) showValue(start int) (arr []string) {
+	length := 12
+	end := start + length
+	template := "%-10s %10s %10s %10s %10s %10s %10s %10s %10s %10s %10s %10s %10s\n"
+
+	title := make([]Bpoint, 0)
+
+	for i := start; i < end; i++ {
+		title = append(title, Bpoint(i))
+	}
+
+	printBp := func(title string, val []Bpoint) string {
+		return fmt.Sprintf(template, title, val[0], val[1], val[2], val[3],
+			val[4], val[5], val[6], val[7], val[8], val[9], val[10], val[11])
+	}
+	printPoint := func(title string, val []Point) string {
+		return fmt.Sprintf(template, title, val[0], val[1], val[2], val[3],
+			val[4], val[5], val[6], val[7], val[8], val[9], val[10], val[11])
+	}
+
+	arr = append(arr, printBp("Col", title))
+	arr = append(arr, printPoint("Up", self.Up[start:end]))
+
+	arr = append(arr, fmt.Sprintln(strings.Repeat("-", 145)))
+
+	arr = append(arr, printPoint("V1", self.V1[start:end]))
+	arr = append(arr, printPoint("V2", self.V2[start:end]))
+
+	arr = append(arr, printPoint("V3", self.V3[start:end]))
+	arr = append(arr, printPoint("Sum", self.Sum[start:end]))
+
+	return arr
+}
+
+func (self *ThreeSome) String() string {
+	arr := self.showValue(0)
+	ret := strings.Join(arr, "") + "\n"
+
 	return ret
 }

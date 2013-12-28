@@ -64,6 +64,14 @@ func (self *BigData) Init() {
 		self.Data[i].Init(i)
 	}
 	self.calcDgValues(0)
+	for i = 0; i < THREESOME_NUM; i++ {
+		if i == 0 {
+			self.TsData[i].Init(self.Gf1[0])
+		} else {
+			self.TsData[i].Init(self.TsData[i-1].Up[0])
+		}
+	}
+	self.TsValue[0] = self.TsData[THREESOME_NUM-1].Sum[0]
 }
 
 func (self *BigData) Run(inst Bpoint, pos Value) {
@@ -106,19 +114,22 @@ func (self *BigData) calc(pos Value) {
 			close(chn)
 		}
 	}
-	/*
-		self.Dg[pos].T = false
-		self.Gz[pos].T = false
-		self.Gzmm[pos].T = false
-		self.Gf[pos].T = false
-		self.Gfmm[pos].T = false
-		self.Gf1[pos].T = false
-	*/
+
+	for j = 0; j < THREESOME_NUM; j++ {
+		if j == 0 {
+			self.TsData[j].Up[pos] = self.Gf1[pos]
+		} else {
+			self.TsData[j].Up[pos] = self.TsData[j-1].Sum[pos]
+		}
+		self.TsData[j].calc(pos)
+	}
+	self.TsValue[pos] = self.TsData[THREESOME_NUM-1].Sum[pos]
 }
 
 func (self *BigData) withZ(inst Bpoint, pos Value) {
+	var i Value
 	self.Inst[pos] = inst
-	for i := 0; i < ZG_NUM; i++ {
+	for i = 0; i < ZG_NUM; i++ {
 		self.Data[i].withZ(inst, pos)
 	}
 	withZ(&self.Dg[pos], inst)
@@ -127,4 +138,9 @@ func (self *BigData) withZ(inst Bpoint, pos Value) {
 	withZ(&self.Gf[pos], inst)
 	withZ(&self.Gfmm[pos], inst)
 	withZ(&self.Gf1[pos], inst)
+
+	for i = 0; i < THREESOME_NUM; i++ {
+		self.TsData[i].withZ(inst, pos)
+	}
+	self.TsValue[pos] = self.TsData[THREESOME_NUM-1].Sum[pos]
 }

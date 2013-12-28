@@ -33,8 +33,11 @@
         var container = $('#calc-table');
         var initDone = false;
         var ZG_NUM = 0;
+        var TS_NUM = 2;
         var COLS = 55;
-        var ZG_START = 8;
+        var TS_START = 8;
+        var TS_SIZE = 6
+        var ZG_START = TS_START + TS_NUM * TS_SIZE;
         var ZG_SIZE = 9;
 
         $(function() {
@@ -99,6 +102,16 @@
                 inst.setDataAtCell(4, col+data.Pos, formatPoint(data.Dg[col].Gf));
                 inst.setDataAtCell(5, col+data.Pos, formatPoint(data.Dg[col].Gfmm));
                 inst.setDataAtCell(6, col+data.Pos, formatPoint(data.Dg[col].Gf1));
+                inst.setDataAtCell(7, col+data.Pos, formatPoint(data.Dg[col].TsValue));
+
+                for(var i=0; i<TS_NUM; i++) {
+                    //console.log(i, TS_START+i*TS_SIZE+1, data.Dg[col].TsData[i].Up);
+                    inst.setDataAtCell(TS_START+i*TS_SIZE+1, col+data.Pos, formatPoint(data.Dg[col].TsData[i].Up));
+                    inst.setDataAtCell(TS_START+i*TS_SIZE+2, col+data.Pos, formatPoint(data.Dg[col].TsData[i].V1));
+                    inst.setDataAtCell(TS_START+i*TS_SIZE+3, col+data.Pos, formatPoint(data.Dg[col].TsData[i].V2));
+                    inst.setDataAtCell(TS_START+i*TS_SIZE+4, col+data.Pos, formatPoint(data.Dg[col].TsData[i].V3));
+                    inst.setDataAtCell(TS_START+i*TS_SIZE+5, col+data.Pos, formatPoint(data.Dg[col].TsData[i].Sum));
+                }
 
                 for(var i=0; i<ZG_NUM; i++) {
                     inst.setDataAtCell(ZG_START+i*ZG_SIZE+1, col+data.Pos, data.Zg[col][i].Inst);
@@ -142,7 +155,13 @@
                 columnRenderers.push({renderer: zRenderer});
             }
 
-            var rowHeaders = ['输入', '总果', '果正', '果正x', '果反', '果反x', '果反1', ''];
+            var rowHeaders = ['输入', '总果', '果正', '果正x', '果反', '果反x', '果反1', '第9组和', ''];
+
+            for (var i=0; i<TS_NUM; i++) {
+                var s = i+1;
+                rowHeaders = rowHeaders.concat(['上' + s, '值1', '值2', '值3', '和',  '']);
+            }
+
             for (var i=0; i<ZG_NUM; i++) {
                 var s = i+1;
                 rowHeaders = rowHeaders.concat(['基本点', '中输入', '中果' + s, '果正', '果正x', '果反', '果反x', '果反1', '']);
@@ -161,12 +180,14 @@
                 columns: columnRenderers,
                 scrollH: 'none',
                 colWidths: _.times(55, function(n) { return 90;}),
+                /*
                 cells: function (row, col, prop) {
                     var cellProperties = {};
                     if (row != 0) cellProperties.readOnly = true;
                     
                     return cellProperties;
                 },
+                */
                 beforeKeyDown: function (e) {
                     var instance = container.handsontable('getInstance')
                       , selection = instance.getSelected();
