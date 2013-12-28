@@ -1,6 +1,7 @@
 package calc
 
 import (
+	"fmt"
 	"math"
 )
 
@@ -138,14 +139,21 @@ func withZ(p *Point, inst Bpoint) {
 
 func calcDelta(data [COLS]Point) (ret Value) {
 	var hasz, hasnz Value
-	for i := 0; i < COLS; i++ {
+	strHasz := "hasz = "
+	strHasnz := "hasnz = "
+	for i := 0; i < COLS-1; i++ {
 		if data[i].T {
 			hasz += Abs(data[i].V)
+			strHasz += fmt.Sprintf("%d + ", Abs(data[i].V))
 		} else {
 			hasnz += Abs(data[i].V)
+			strHasnz += fmt.Sprintf("%d + ", Abs(data[i].V))
 		}
 	}
 	ret = hasnz - hasz
+	fmt.Println(strHasz)
+	fmt.Println(strHasnz)
+	fmt.Printf("nz: %d, z: %d, ret=%d\n", hasnz, hasz, ret)
 	return ret
 }
 

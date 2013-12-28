@@ -166,9 +166,10 @@ func initValues(index uint) {
 }
 
 func clear() {
-	index := values.Index
-	values.Clear()
-	initValues(index)
+	//index := values.Index
+	//values.Clear()
+	//initValues(index)
+	os.Exit(1)
 }
 
 func main() {
