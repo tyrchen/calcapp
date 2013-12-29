@@ -38,8 +38,8 @@ type DgData struct {
 	Gf      Point
 	Gfmm    Point
 	Gf1     Point
-	TsValue Point
-	TsData  [THREESOME_NUM]DgTsData
+	TsValue [THREESOME_TOTAL]Point
+	//TsData  [THREESOME_NUM]DgTsData
 }
 
 type CalcData struct {
@@ -143,7 +143,7 @@ func calc(inst Bpoint, pos Value) {
 }
 
 func getValues(pos Value) (ret CalcData) {
-	var i Value
+	var i, l Value
 	ret.Method = "calc"
 	ret.Pos = pos
 
@@ -154,15 +154,21 @@ func getValues(pos Value) (ret CalcData) {
 		ret.Dg[i].Gf = values.Gf[i+pos]
 		ret.Dg[i].Gfmm = values.Gfmm[i+pos]
 		ret.Dg[i].Gf1 = values.Gf1[i+pos]
-		ret.Dg[i].TsValue = values.TsValue[i+pos]
-
-		for k := 0; k < THREESOME_NUM_SHOW; k++ {
-			ret.Dg[i].TsData[k].Up = values.TsData[k].Up[i+pos]
-			ret.Dg[i].TsData[k].V1 = values.TsData[k].V1[i+pos]
-			ret.Dg[i].TsData[k].V2 = values.TsData[k].V2[i+pos]
-			ret.Dg[i].TsData[k].V3 = values.TsData[k].V3[i+pos]
-			ret.Dg[i].TsData[k].Sum = values.TsData[k].Sum[i+pos]
+		for l = 0; l < THREESOME_TOTAL; l++ {
+			ret.Dg[i].TsValue[l] = values.TsValue[l][i+pos]
 		}
+
+		/*
+			for k := 0; k < THREESOME_NUM_SHOW; k++ {
+				for l = 0; l < THREESOME_TOTAL; l++ {
+					ret.Dg[i].TsData[[k].Up = values.TsData[k].Up[i+pos]
+					ret.Dg[i].TsData[k].V1 = values.TsData[k].V1[i+pos]
+					ret.Dg[i].TsData[k].V2 = values.TsData[k].V2[i+pos]
+					ret.Dg[i].TsData[k].V3 = values.TsData[k].V3[i+pos]
+					ret.Dg[i].TsData[k].Sum = values.TsData[k].Sum[i+pos]
+				}
+			}
+		*/
 
 		for j := 0; j < ZG_NUM_SHOW; j++ {
 			ret.Zg[i][j].Inst = values.Data[j].Inst[i+pos]

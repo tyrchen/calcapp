@@ -162,14 +162,18 @@ func (self *BigData) showValue(start int) (arr []string) {
 	arr = append(arr, printPoint("GFMM", self.Gfmm[start:end]))
 
 	arr = append(arr, printPoint("GF1", self.Gf1[start:end]))
-	arr = append(arr, printPoint("TS", self.TsValue[start:end]))
 
+	arr = append(arr, printPoint("TS-zmm", self.TsValue[0][start:end]))
+	arr = append(arr, printPoint("TS-fmm", self.TsValue[1][start:end]))
+	arr = append(arr, printPoint("TS-f1", self.TsValue[2][start:end]))
+
+	// only show zmm 9
 	for j = 0; j < THREESOME_NUM_SHOW; j++ {
-		arr = append(arr, printPoint("Up", self.TsData[j].Up[start:end]))
-		arr = append(arr, printPoint("V1", self.TsData[j].V1[start:end]))
-		arr = append(arr, printPoint("V2", self.TsData[j].V2[start:end]))
-		arr = append(arr, printPoint("V3", self.TsData[j].V3[start:end]))
-		arr = append(arr, printPoint("Sum", self.TsData[j].Sum[start:end]))
+		arr = append(arr, printPoint("Up", self.TsData[0][j].Up[start:end]))
+		arr = append(arr, printPoint("V1", self.TsData[0][j].V1[start:end]))
+		arr = append(arr, printPoint("V2", self.TsData[0][j].V2[start:end]))
+		arr = append(arr, printPoint("V3", self.TsData[0][j].V3[start:end]))
+		arr = append(arr, printPoint("Sum", self.TsData[0][j].Sum[start:end]))
 	}
 
 	return arr

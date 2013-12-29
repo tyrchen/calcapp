@@ -32,10 +32,11 @@
         var wsuri = "ws://127.0.0.1:8211";
         var container = $('#calc-table');
         var initDone = false;
+        var THREESOME_TOTAL = 3;
         var ZG_NUM = 0;
-        var TS_NUM = 2;
+        var TS_NUM = 0;
         var COLS = 55;
-        var TS_START = 8;
+        var TS_START = 10;
         var TS_SIZE = 6
         var ZG_START = TS_START + TS_NUM * TS_SIZE;
         var ZG_SIZE = 9;
@@ -102,7 +103,9 @@
                 inst.setDataAtCell(4, col+data.Pos, formatPoint(data.Dg[col].Gf));
                 inst.setDataAtCell(5, col+data.Pos, formatPoint(data.Dg[col].Gfmm));
                 inst.setDataAtCell(6, col+data.Pos, formatPoint(data.Dg[col].Gf1));
-                inst.setDataAtCell(7, col+data.Pos, formatPoint(data.Dg[col].TsValue));
+                for (var i=0; i<THREESOME_TOTAL; i++) {
+                    inst.setDataAtCell(7+i, col+data.Pos, formatPoint(data.Dg[col].TsValue[i]));
+                }
 
                 for(var i=0; i<TS_NUM; i++) {
                     //console.log(i, TS_START+i*TS_SIZE+1, data.Dg[col].TsData[i].Up);
@@ -155,7 +158,7 @@
                 columnRenderers.push({renderer: zRenderer});
             }
 
-            var rowHeaders = ['输入', '总果', '果正', '果正x', '果反', '果反x', '果反1', '第9组和', ''];
+            var rowHeaders = ['输入', '总果', '果正', '果正x', '果反', '果反x', '果反1', '正x-9组', '反x-9组', '反1-9组', ''];
 
             for (var i=0; i<TS_NUM; i++) {
                 var s = i+1;

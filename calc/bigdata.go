@@ -59,19 +59,25 @@ func (self *BigData) CalcDelta() (ret [5]Value) {
 }
 
 func (self *BigData) Init() {
-	var i uint
+	var i, j uint
 	for i = 0; i < ZG_NUM; i++ {
 		self.Data[i].Init(i)
 	}
 	self.calcDgValues(0)
 	for i = 0; i < THREESOME_NUM; i++ {
 		if i == 0 {
-			self.TsData[i].Init(self.Gf1[0])
+			self.TsData[0][i].Init(self.Gzmm[0])
+			self.TsData[1][i].Init(self.Gfmm[0])
+			self.TsData[2][i].Init(self.Gf1[0])
 		} else {
-			self.TsData[i].Init(self.TsData[i-1].Up[0])
+			for j = 0; j < THREESOME_TOTAL; j++ {
+				self.TsData[j][i].Init(self.TsData[j][i-1].Up[0])
+			}
 		}
 	}
-	self.TsValue[0] = self.TsData[THREESOME_NUM-1].Sum[0]
+	for j = 0; j < THREESOME_TOTAL; j++ {
+		self.TsValue[j][0] = self.TsData[j][THREESOME_NUM-1].Sum[0]
+	}
 }
 
 func (self *BigData) Run(inst Bpoint, pos Value) {
@@ -80,7 +86,7 @@ func (self *BigData) Run(inst Bpoint, pos Value) {
 }
 
 func (self *BigData) calc(pos Value) {
-	var j Value
+	var j, k Value
 	chn := make(chan chanBigData, ZG_NUM)
 
 	worker := func(i Value, chn chan chanBigData) {
@@ -117,17 +123,26 @@ func (self *BigData) calc(pos Value) {
 
 	for j = 0; j < THREESOME_NUM; j++ {
 		if j == 0 {
-			self.TsData[j].Up[pos] = self.Gf1[pos]
+			self.TsData[0][j].Up[pos] = self.Gzmm[pos]
+			self.TsData[1][j].Up[pos] = self.Gfmm[pos]
+			self.TsData[2][j].Up[pos] = self.Gf1[pos]
 		} else {
-			self.TsData[j].Up[pos] = self.TsData[j-1].Sum[pos]
+			for k = 0; k < THREESOME_TOTAL; k++ {
+				self.TsData[k][j].Up[pos] = self.TsData[k][j-1].Sum[pos]
+			}
 		}
-		self.TsData[j].calc(pos)
+		for k = 0; k < THREESOME_TOTAL; k++ {
+			self.TsData[k][j].calc(pos)
+		}
 	}
-	self.TsValue[pos] = self.TsData[THREESOME_NUM-1].Sum[pos]
+
+	for k = 0; k < THREESOME_TOTAL; k++ {
+		self.TsValue[k][pos] = self.TsData[k][THREESOME_NUM-1].Sum[pos]
+	}
 }
 
 func (self *BigData) withZ(inst Bpoint, pos Value) {
-	var i Value
+	var i, j Value
 	self.Inst[pos] = inst
 	for i = 0; i < ZG_NUM; i++ {
 		self.Data[i].withZ(inst, pos)
@@ -140,7 +155,12 @@ func (self *BigData) withZ(inst Bpoint, pos Value) {
 	withZ(&self.Gf1[pos], inst)
 
 	for i = 0; i < THREESOME_NUM; i++ {
-		self.TsData[i].withZ(inst, pos)
+		for j = 0; j < THREESOME_TOTAL; j++ {
+			self.TsData[j][i].withZ(inst, pos)
+		}
 	}
-	self.TsValue[pos] = self.TsData[THREESOME_NUM-1].Sum[pos]
+
+	for j = 0; j < THREESOME_TOTAL; j++ {
+		self.TsValue[j][pos] = self.TsData[j][THREESOME_NUM-1].Sum[pos]
+	}
 }
