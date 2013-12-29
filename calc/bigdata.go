@@ -2,6 +2,11 @@ package calc
 
 import ()
 
+const (
+	THREESOME_BIG_NUM       = 61
+	THREESOME_DIFFERENTIATE = 1000
+)
+
 type chanBigData struct {
 	zg   Value
 	gz   Value
@@ -49,6 +54,28 @@ func (self *BigData) calcDgValues(pos Value) {
 	}
 }
 
+func (self *BigData) calcThreeSomeSum(pos, cursor Value) (ret Value) {
+	for i := 0; i < THREESOME_NUM; i++ {
+		v := self.TsData[cursor][i].Sum[pos].V
+		if v > THREESOME_BIG_NUM {
+			ret += THREESOME_DIFFERENTIATE
+		} else if v < -THREESOME_BIG_NUM {
+			ret += -THREESOME_DIFFERENTIATE
+		} else {
+			ret += v
+		}
+
+	}
+	return
+}
+
+func (self *BigData) calcTsRet(pos Value) (ret Value) {
+	for i := 0; i < THREESOME_TOTAL; i++ {
+		ret += self.TsValue[i][pos].V
+	}
+	return
+}
+
 func (self *BigData) CalcDelta() (ret [5]Value) {
 	ret[0] = calcDelta(self.Gz)
 	ret[1] = calcDelta(self.Gzmm)
@@ -60,6 +87,7 @@ func (self *BigData) CalcDelta() (ret [5]Value) {
 
 func (self *BigData) Init() {
 	var i, j uint
+	var k Value
 	for i = 0; i < ZG_NUM; i++ {
 		self.Data[i].Init(i)
 	}
@@ -75,9 +103,10 @@ func (self *BigData) Init() {
 			}
 		}
 	}
-	for j = 0; j < THREESOME_TOTAL; j++ {
-		self.TsValue[j][0] = self.TsData[j][THREESOME_NUM-1].Sum[0]
+	for k = 0; k < THREESOME_TOTAL; k++ {
+		self.TsValue[k][0].V = self.calcThreeSomeSum(0, k)
 	}
+	self.TsRet[0].V = self.calcTsRet(0)
 }
 
 func (self *BigData) Run(inst Bpoint, pos Value) {
@@ -137,8 +166,9 @@ func (self *BigData) calc(pos Value) {
 	}
 
 	for k = 0; k < THREESOME_TOTAL; k++ {
-		self.TsValue[k][pos] = self.TsData[k][THREESOME_NUM-1].Sum[pos]
+		self.TsValue[k][pos].V = self.calcThreeSomeSum(pos, k)
 	}
+	self.TsRet[pos].V = self.calcTsRet(pos)
 }
 
 func (self *BigData) withZ(inst Bpoint, pos Value) {
@@ -161,6 +191,7 @@ func (self *BigData) withZ(inst Bpoint, pos Value) {
 	}
 
 	for j = 0; j < THREESOME_TOTAL; j++ {
-		self.TsValue[j][pos] = self.TsData[j][THREESOME_NUM-1].Sum[pos]
+		withZ(&self.TsValue[j][pos], inst)
 	}
+	withZ(&self.TsRet[pos], inst)
 }

@@ -39,6 +39,7 @@ type DgData struct {
 	Gfmm    Point
 	Gf1     Point
 	TsValue [THREESOME_TOTAL]Point
+	TsRet   Point
 	//TsData  [THREESOME_NUM]DgTsData
 }
 
@@ -157,6 +158,7 @@ func getValues(pos Value) (ret CalcData) {
 		for l = 0; l < THREESOME_TOTAL; l++ {
 			ret.Dg[i].TsValue[l] = values.TsValue[l][i+pos]
 		}
+		ret.Dg[i].TsRet = values.TsRet[i+pos]
 
 		/*
 			for k := 0; k < THREESOME_NUM_SHOW; k++ {

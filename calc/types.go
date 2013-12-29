@@ -82,6 +82,7 @@ type BigData struct {
 	Gfmm    [COLS]Point
 	Gf1     [COLS]Point
 	TsValue [THREESOME_TOTAL][COLS]Point
+	TsRet   [COLS]Point
 	TsData  [THREESOME_TOTAL][THREESOME_NUM]ThreeSome
 	Data    [ZG_NUM]GroupData
 }
