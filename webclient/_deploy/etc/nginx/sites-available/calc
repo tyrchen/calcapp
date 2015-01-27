@@ -1,8 +1,8 @@
 server {
   listen 80;
-  server_name wg.com;
+  server_name c.tchen.me;
 
-  set $current_root "/home/wanggang/go/src/calcapp/webclient";
+  set $current_root "/home/tyr/calcapp/webclient";
   client_max_body_size 128m;
 
   access_log /var/log/nginx/calc.access.log;
