@@ -1,0 +1,218 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>大果运算器</title>
+    <link rel="stylesheet" media="screen" href="assets/css/app.min.css">
+    <link rel="stylesheet" media="screen" href="assets/css/jquery.handsontable.full.css">
+    <link rel="stylesheet" media="screen" href="assets/css/custom.css">
+    
+
+</head>
+<body>
+    <div class="container">
+        <h1>大果运算器 
+            <button class="btn btn-primary calc-clear">关闭</button> 
+            <span class="delta" style="font-size:20px"></span>
+        </h1>
+        <!--
+        <input type=”text” class=”gspeech” name=”test” speech=”speech” x-webkit-speech=”x-webkit-speech” x-webkit-grammar=”builtin:translate” />
+        -->
+        <div id="calc-table" class="handsontable">
+            
+        </div>
+    </div>
+    
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/lodash.min.js"></script>
+    <script src="assets/js/jquery.handsontable.full.js"></script>
+    <script src="assets/js/reconnecting-websocket.js"></script>
+
+    <script language="javascript">
+        var sock = null;
+        var wsuri = "ws://127.0.0.1:8211";
+        var container = $('#calc-table');
+        var initDone = false;
+        var THREESOME_TOTAL = 3;
+        var ZG_NUM = 0;
+        var TS_NUM = 0;
+        var COLS = 55;
+        var TS_START = 11;
+        var TS_SIZE = 6
+        var ZG_START = TS_START + TS_NUM * TS_SIZE;
+        var ZG_SIZE = 9;
+
+        $(function() {
+            initWebsocket();
+            initTable(container);
+            $('.calc-clear').on('click', function(e) {
+                sock.send(JSON.stringify({'method': 'close'}));
+                location.reload();
+            });
+        });
+
+
+        
+        function send(data) {
+            var msg = JSON.stringify(data);
+            sock.send(msg);
+        };
+
+        function initWebsocket() {
+            sock = new ReconnectingWebSocket(wsuri);
+
+            sock.onopen = function() {
+                console.log("connected to " + wsuri);
+            }
+
+            sock.onclose = function(e) {
+                console.log("connection closed (" + e.code + ")");
+            }
+
+            sock.onmessage = function(e) {
+                console.log("message received: " + e.data);
+                var data = JSON.parse(e.data);
+                switch(data.Method) {
+                    case 'calc':
+                        showData(data); break;
+                    case 'bpzg':
+                        showBpZg(data); break;
+                    case 'delta':
+                        showDelta(data); break;
+                    case 'close':
+                        container.handsontable('clear'); break;
+                }
+
+            }
+        }
+
+        function formatPoint(p) {
+            if (p.T) return '<b>z' + p.V +'</b>';
+            return p.V;
+        }
+
+        function showData(data) {
+            var inst = container.handsontable('getInstance');
+            for(var col=0;col<2;col++) {
+                if (!initDone && col == 1) {
+                    initDone = true;
+                    continue;
+                }
+                inst.setDataAtCell(1, col+data.Pos, formatPoint(data.Dg[col].Dg));
+                inst.setDataAtCell(2, col+data.Pos, formatPoint(data.Dg[col].Gz));
+                inst.setDataAtCell(3, col+data.Pos, formatPoint(data.Dg[col].Gzmm));
+                inst.setDataAtCell(4, col+data.Pos, formatPoint(data.Dg[col].Gf));
+                inst.setDataAtCell(5, col+data.Pos, formatPoint(data.Dg[col].Gfmm));
+                inst.setDataAtCell(6, col+data.Pos, formatPoint(data.Dg[col].Gf1));
+                for (var i=0; i<THREESOME_TOTAL; i++) {
+                    inst.setDataAtCell(7+i, col+data.Pos, formatPoint(data.Dg[col].TsValue[i]));
+                }
+                inst.setDataAtCell(10, col+data.Pos, formatPoint(data.Dg[col].TsRet));
+
+                for(var i=0; i<TS_NUM; i++) {
+                    //console.log(i, TS_START+i*TS_SIZE+1, data.Dg[col].TsData[i].Up);
+                    inst.setDataAtCell(TS_START+i*TS_SIZE+1, col+data.Pos, formatPoint(data.Dg[col].TsData[i].Up));
+                    inst.setDataAtCell(TS_START+i*TS_SIZE+2, col+data.Pos, formatPoint(data.Dg[col].TsData[i].V1));
+                    inst.setDataAtCell(TS_START+i*TS_SIZE+3, col+data.Pos, formatPoint(data.Dg[col].TsData[i].V2));
+                    inst.setDataAtCell(TS_START+i*TS_SIZE+4, col+data.Pos, formatPoint(data.Dg[col].TsData[i].V3));
+                    inst.setDataAtCell(TS_START+i*TS_SIZE+5, col+data.Pos, formatPoint(data.Dg[col].TsData[i].Sum));
+                }
+
+                for(var i=0; i<ZG_NUM; i++) {
+                    inst.setDataAtCell(ZG_START+i*ZG_SIZE+1, col+data.Pos, data.Zg[col][i].Inst);
+                    inst.setDataAtCell(ZG_START+i*ZG_SIZE+2, col+data.Pos, formatPoint(data.Zg[col][i].Zg));
+                    inst.setDataAtCell(ZG_START+i*ZG_SIZE+3, col+data.Pos, formatPoint(data.Zg[col][i].Gz));
+                    inst.setDataAtCell(ZG_START+i*ZG_SIZE+4, col+data.Pos, formatPoint(data.Zg[col][i].Gzmm));
+                    inst.setDataAtCell(ZG_START+i*ZG_SIZE+5, col+data.Pos, formatPoint(data.Zg[col][i].Gf));
+                    inst.setDataAtCell(ZG_START+i*ZG_SIZE+6, col+data.Pos, formatPoint(data.Zg[col][i].Gfmm));
+                    inst.setDataAtCell(ZG_START+i*ZG_SIZE+7, col+data.Pos, formatPoint(data.Zg[col][i].Gf1));
+                }
+            }
+        }
+
+        function showBpZg(data) {
+            var inst = container.handsontable('getInstance');
+            
+            for (var i=0; i<ZG_NUM; i++) {
+                for (var col=0; col<COLS; col++) {
+                    inst.setDataAtCell(ZG_START+i*ZG_SIZE, col, data.Values[i][col]);
+                }
+            }
+        }
+
+        function showDelta(data) {
+            var str = '果正: ' + data.Values[0] + ', 果正乘数: ' + data.Values[1] + ', 果反' + data.Values[2] +
+                        ', 果反乘数: ' + data.Values[3] + ', 果反1: ' + data.Values[4]
+            $('.delta').text(str)
+        }
+
+        function initTable(container) {
+            var lastCol = -1;
+
+            var zRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+                var escaped = Handsontable.helper.stringify(value);
+                td.innerHTML = escaped;
+                return td;
+            };
+            var columnRenderers = [];
+
+            for(var i=0; i<COLS; i++) {
+                columnRenderers.push({renderer: zRenderer});
+            }
+
+            var rowHeaders = ['输入', '总果', '果正', '果正x', '果反', '果反x', '果反1', '正x-9组', '反x-9组', '反1-9组', '9果', ''];
+
+            for (var i=0; i<TS_NUM; i++) {
+                var s = i+1;
+                rowHeaders = rowHeaders.concat(['上' + s, '值1', '值2', '值3', '和',  '']);
+            }
+
+            for (var i=0; i<ZG_NUM; i++) {
+                var s = i+1;
+                rowHeaders = rowHeaders.concat(['基本点', '中输入', '中果' + s, '果正', '果正x', '果反', '果反x', '果反1', '']);
+            }
+
+            var minRows = rowHeaders.length;
+
+            container.handsontable({
+                minSpareRows: 1,
+                minRows: minRows,
+                minCols: COLS,
+                currentRowClassName: 'currentRow',
+                currentColClassName: 'currentCol',
+                rowHeaders: rowHeaders,
+                colHeaders: _.range(1, 56),
+                columns: columnRenderers,
+                scrollH: 'none',
+                colWidths: _.times(55, function(n) { return 90;}),
+                /*
+                cells: function (row, col, prop) {
+                    var cellProperties = {};
+                    if (row != 0) cellProperties.readOnly = true;
+                    
+                    return cellProperties;
+                },
+                */
+                beforeKeyDown: function (e) {
+                    var instance = container.handsontable('getInstance')
+                      , selection = instance.getSelected();
+                    if (e.keyCode == 49 || e.keyCode == 48) {
+                        var col = selection[1];
+                        if (col - lastCol == 1) {
+                            e.stopImmediatePropagation();
+                            var inst = e.keyCode - 48;
+                            send({method: 'calc', pos: col, inst: inst});
+                            lastCol = col;
+                            instance.setDataAtCell(0, col, inst);
+                            container.handsontable("selectCell", 0, col+1);
+                            e.preventDefault();
+                        }
+                    }
+
+                    
+                }
+            });
+            container.handsontable("selectCell", 0, 0);
+        }
+    </script>
+</body>
+</html>

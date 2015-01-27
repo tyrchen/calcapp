@@ -8,8 +8,8 @@ GO=`which go`
 RSYNC=`which rsync`
 
 BIN=./bin
-SERVER=zoneke
-DEPLOY_PATH=/home/tyr/calcapp
+SERVER=weixin
+DEPLOY_PATH=/home/tchen/calcapp
 
 PACKAGES=network utils calc
 PACKAGE_PATHS=$(patsubst %,./%, $(PACKAGES))
@@ -18,22 +18,21 @@ ALL_FILES=$(shell find . -type f -name '*.go')
 
 .PHONY: build packages clean dir supervisor nginx remote_deploy copy
 
-build: clean packages $(TARGETS)
+build: packages $(TARGETS)
 	@echo $(DONE)
 
 $(TARGETS): $(BIN)/%: %.go
 	@echo "building $<..."
-	@$(GO) build -o $@ $< 
+	@GOOS=$(GOOS) $(GO) build -o $@ $<
 
 packages:
 	@echo "making packages"
-	@$(GO) install $(PACKAGE_PATHS)
+	@GOOS=$(GOOS) $(GO) install $(PACKAGE_PATHS)
 
 supervisor:
 	@$(ECHO) "\nUpdate supervisor configuration..."
 	@$(SUDO) $(SUPERVISORCTL) reread
 	@$(SUDO) $(SUPERVISORCTL) update
-	@$(SUDO) $(SUPERVISORCTL) restart calc-*
 
 nginx:
 	@$(ECHO) "\nRestart nginx..."
@@ -49,8 +48,9 @@ copy:
 	@$(RSYNC) -avu $(BIN) $(SERVER):$(DEPLOY_PATH)/
 	@$(RSYNC) -avu webclient $(SERVER):$(DEPLOY_PATH)/
 
+remote_deploy: GOOS=linux
 remote_deploy: build copy
-	@$(SSH) -t $(SERVER) make supervisor; make nginx"
+	@ssh -t $(SERVER) "cd $(DEPLOY_PATH); make supervisor; make nginx"
 	@echo $(DONE)
 
 cloc:
