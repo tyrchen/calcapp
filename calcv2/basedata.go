@@ -3,15 +3,16 @@ package calcv2
 import (
 	. "calcapp/utils"
 	"strconv"
+	"strings"
 )
 
-const (
-	BP = "11111110111111101111111011111110111111101111111011111110"
+var (
+	BP = strings.Repeat("11111110", 7)
 )
 
 func (self *BaseData) Init() {
 	// init the col 0
-	self.LoadBp(BP)
+	// self.LoadBp(BP)
 	sign := Bsign(self.Bp[0])
 	
 	for i := 0; i < ROWS; i++ {
@@ -23,7 +24,7 @@ func (self *BaseData) Init() {
 }
 
 func (self *BaseData) LoadBp(bp string) {
-	for i := 0; i < COLS; i++ {
+	for i := 0; i < COLS - 1; i++ {
 		tmp, _ := strconv.Atoi(string(bp[i]))
 		self.Bp[i] = Bpoint(tmp)
 		self.Zbp[i].V = Value(tmp)

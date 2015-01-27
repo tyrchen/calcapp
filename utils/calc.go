@@ -96,3 +96,43 @@ func WithZbp(p *Point, bp, inst Bpoint) {
 	}
 }
 
+func calc_fold(v1, v2, v3 Point) (r Point) {
+	r.V = v1.V + v2.V + v3.V
+	if r.V > 1 {
+		r.V = 1
+	} else if r.V < -1 {
+		r.V = -1
+	}
+	return
+}
+
+func calc_reduce(part []Point) Point {
+	l := len(part) / 3
+	if l == 0 {
+		panic("cannot be 0")
+	}
+	
+	if l == 1 {
+		return calc_fold(part[0], part[1], part[2])
+	} else {
+		return calc_fold(
+			calc_reduce(part[:l]),
+			calc_reduce(part[l:l*2]),
+			calc_reduce(part[l*2:l*3]))
+	}
+}
+
+func CalcReduce(data []Point) (ret [4]Point) {
+	l := len(data)
+	if l == 0 || l % 3 != 0 {
+		panic("chunk size should be multiple of 3")
+	}
+	l = l / 3
+
+	ret[1] = calc_reduce(data[:l])
+	ret[2] = calc_reduce(data[l:l*2])
+	ret[3] = calc_reduce(data[l*2:l*3])
+	ret[0] = calc_fold(ret[1],ret[2], ret[3])
+	return
+}
+

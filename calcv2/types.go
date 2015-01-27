@@ -5,20 +5,15 @@ import (
 )
 
 const (
-	COLS       = 56
+	COLS       = 56 + 1
 	ROWS       = 9
-	GROUP_SIZE = 0
+	GROUP_SIZE = 9
 	STOP_COL   = 0
 	STOP_VALUE = 2047
 
-	// for concurrency
-	CHUNKS     = 100
-	CHUNK_SIZE = GROUP_SIZE / CHUNKS
+	CHUNK_SIZE = 3
 
 )
-
-type Duck interface{}
-
 
 type Env struct {
 	CurrentCol Value
@@ -35,4 +30,9 @@ type BaseData struct {
 	Data [ROWS][COLS]Point
 	Ag   [COLS]Point  // A果
 	G1   [COLS]Point  // 果1
+}
+
+type BaseGroup struct {
+	Data  	[GROUP_SIZE]BaseData
+	G1		[CHUNK_SIZE+1][COLS]Point	// intermediate value, plus G1
 }

@@ -2,6 +2,7 @@ CHECK=\033[32m✔\033[39m
 DONE="\n$(CHECK) Done.\n"
 
 ECHO=echo
+CP=`which cp`
 SUDO=`which sudo`
 SUPERVISORCTL=`which supervisorctl`
 GO=`which go`
@@ -11,15 +12,18 @@ BIN=./bin
 SERVER=weixin
 DEPLOY_PATH=/home/tchen/calcapp
 
-PACKAGES=network utils calc
+PACKAGES=network utils calc calcv2
 PACKAGE_PATHS=$(patsubst %,./%, $(PACKAGES))
 TARGETS=$(patsubst %.go,$(BIN)/%,$(wildcard *.go))
 ALL_FILES=$(shell find . -type f -name '*.go')
 
-.PHONY: build packages clean dir supervisor nginx remote_deploy copy
+.PHONY: build packages clean dir supervisor nginx remote_deploy copy data
 
-build: packages $(TARGETS)
+build: data packages $(TARGETS)
 	@echo $(DONE)
+
+data:
+	@$(RSYNC) -au data $(BIN)
 
 $(TARGETS): $(BIN)/%: %.go
 	@echo "building $<..."
