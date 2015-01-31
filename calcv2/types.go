@@ -7,7 +7,7 @@ import (
 const (
 	COLS       = 56 + 1
 	ROWS       = 9
-	GROUP_SIZE = 9
+	GROUP_SIZE = 27
 	STOP_COL   = 0
 	STOP_VALUE = 2047
 
