@@ -7,7 +7,7 @@ import (
 )
 
 type Bpoint uint8
-type Value int
+type Value int16
 type Point struct {
 	T bool
 	V Value

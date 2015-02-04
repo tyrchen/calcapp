@@ -31,6 +31,14 @@ func (self *BaseData) LoadBp(bp string) {
 	}
 }
 
+func (self *BaseData) LoadBpArray(bp [8]Bpoint) {
+	for i := 0; i < COLS - 1; i++ {
+		tmp := bp[i % 8]
+		self.Bp[i] = tmp
+		self.Zbp[i].V = Value(tmp)
+	}	
+}
+
 func (self *BaseData) Run(inst Bpoint, pos Value) {
 
 	self.withZ(inst, pos)

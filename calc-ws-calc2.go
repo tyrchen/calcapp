@@ -121,6 +121,8 @@ func main() {
 	
 	initValues()
 
+	fmt.Println("Calcv2 started")
+
 	http.Handle("/", websocket.Handler(calcHandler))
 
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil); err != nil {
