@@ -6,10 +6,11 @@ import (
 
 const (
 	COLS       = 56 + 1
-	ROWS       = 9
+	ROWS       = 128 //9
 	//GROUP_SIZE = 9 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 // G20
-	GROUP_SIZE = 9 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3// G10
+	// GROUP_SIZE = 9 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3// G10
 	//GROUP_SIZE = 3 * 3 * 3 * 3
+	GROUP_SIZE = 1
 	LAYER 	   = 11
 	STOP_COL   = 0
 	STOP_VALUE = 2047

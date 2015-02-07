@@ -12,7 +12,7 @@ var (
 
 func (self *BaseData) Init() {
 	// init the col 0
-	// self.LoadBp(BP)
+	self.LoadBp(BP)
 	sign := Bsign(self.Bp[0])
 	
 	for i := 0; i < ROWS; i++ {

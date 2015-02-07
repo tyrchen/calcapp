@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	BASE_DATA_VALUE_ROWS = 3 + ROWS + 2
+	BASE_DATA_VALUE_ROWS = 3 + 2 + ROWS
 )
 
 type CalcData struct {
@@ -93,13 +93,12 @@ func getValues(pos Value) (ret CalcData) {
 	for i = 0; i < 2; i++ {
 		ret.Values[i][1] = Point{false, Value(data.Bp[pos+i])}
 		ret.Values[i][2] = data.Zbp[pos+i]
+		ret.Values[i][3] = data.Ag[pos+i]
+		ret.Values[i][4] = data.G1[pos+i]
 
 		for j := 0; j < ROWS; j++ {
-			ret.Values[i][j+3] = data.Data[j][pos+i]
+			ret.Values[i][j+5] = data.Data[j][pos+i]
 		}
-
-		ret.Values[i][12] = data.Ag[pos+i]
-		ret.Values[i][13] = data.G1[pos+i]
 	}
 
 	return ret
