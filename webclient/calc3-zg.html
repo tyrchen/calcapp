@@ -1,0 +1,177 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>中果运算器</title>
+    <link rel="stylesheet" media="screen" href="assets/css/app.min.css">
+    <link rel="stylesheet" media="screen" href="assets/css/jquery.handsontable.full.css">
+    <link rel="stylesheet" media="screen" href="assets/css/custom.css">
+</head>
+<body>
+    <div class="container">
+        <h1>中果运算器 
+            <button class="btn btn-primary calc-clear">关闭</button> 
+            <span class="multiplier" style="font-size:14px"></span>
+        </h1>
+        <div id="calc-table" class="handsontable">
+            
+        </div>
+    </div>
+    
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/lodash.min.js"></script>
+    <script src="assets/js/jquery.handsontable.full.js"></script>
+    <script src="assets/js/reconnecting-websocket.js"></script>
+
+    <script language="javascript">
+        var sock = null;
+        var wsuri = url(8220, "");
+        var container = $('#calc-table');
+        var initDone = false;
+        var initDone1 = false;
+        var GROUPS = 27;
+        var RESULTS = 3;
+        var COLS = 56;
+
+        function createArray(length) {
+            var arr = new Array(length || 0),
+                i = length;
+
+            if (arguments.length > 1) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                while(i--) arr[length-1 - i] = createArray.apply(this, args);
+            }
+
+            return arr;
+        }
+
+        var zData = createArray(RESULTS + GROUPS, 2);
+
+        function url(port, path) {
+            var l = window.location;
+            return ((l.protocol === "https:") ? "wss://" : "ws://") + l.hostname + ":" + port + path;
+        }
+        
+        $(function() {
+            initWebsocket();
+            initTable(container);
+            $('.calc-clear').on('click', function(e) {
+                sock.send(JSON.stringify({'method': 'close'}));
+                location.reload();
+            });
+        });
+
+
+        
+        function send(data) {
+            var msg = JSON.stringify(data);
+            sock.send(msg);
+        };
+
+        function initWebsocket() {
+            sock = new ReconnectingWebSocket(wsuri);
+
+            sock.onopen = function() {
+                console.log("connected to " + wsuri);
+            }
+
+            sock.onclose = function(e) {
+                console.log("connection closed (" + e.code + ")");
+            }
+
+            sock.onmessage = function(e) {
+                console.log("message received: " + e.data);
+                var data = JSON.parse(e.data);
+                switch(data.Method) {
+                    case 'calc':
+                        showData(data); break;
+                    case 'close':
+                        container.handsontable('clear'); break;
+
+                }
+
+            }
+        }
+
+        function formatPoint(p) {
+            //console.log(p);
+            if (p.T) return '<b>z' + p.V +'</b>';
+            return p.V.toString();
+        }
+
+        function showData(data) {
+            var inst = container.handsontable('getInstance');
+
+            for(var col=0;col<2;col++) {
+                if (!initDone && col == 1) {
+                    initDone = true;
+                    continue;
+                }
+
+                for(var row=1; row<RESULTS + GROUPS; row++) {
+                    var p = data.Values[col][row]
+                    var v = formatPoint(p)
+                    zData[row-1][col] = v
+                    //container.handsontable('setDataAtCell', row, col+data.Pos, formatPoint(p));
+                }
+            }
+            container.handsontable('populateFromArray', 1, data.Pos, zData);
+        }
+
+        function initTable(container) {
+            var lastCol = -1;
+            var zRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+                var escaped = Handsontable.helper.stringify(value);
+                td.innerHTML = escaped;
+                return td;
+            };
+            var columnRenderers = [];
+
+            for(var i=0; i<COLS; i++) {
+                columnRenderers.push({renderer: zRenderer});
+            }
+
+            var headers = ['输入', '果1', '中果'];
+
+            for (var i=0; i<GROUPS; i++) {
+                headers.push((i+1).toString())
+            }
+
+            headers.push('')
+            
+            container.handsontable({
+                //data: Handsontable.helper.createSpreadsheetData(128+6, 57),
+                minSpareRows: 1,
+                minRows: RESULTS + GROUPS + 1,
+                minCols: COLS,
+                currentRowClassName: 'currentRow',
+                currentColClassName: 'currentCol',
+                rowHeaders: headers,
+                colHeaders: _.range(1, COLS+1),
+                colWidths: _.times(COLS, function(n) { return 90;}),
+                scrollH: 'none',
+                columns: columnRenderers,
+
+                beforeKeyDown: function (e) {
+                    var instance = container.handsontable('getInstance')
+                      , selection = instance.getSelected();
+                    if (e.keyCode == 49 || e.keyCode == 48) {
+                        var col = selection[1];
+                        if (col - lastCol == 1) {
+                            e.stopImmediatePropagation();
+                            var inst = e.keyCode - 48;
+                            send({method: 'calc', pos: col, inst: inst});
+                            lastCol = col;
+                            instance.setDataAtCell(0, col, inst);
+                            container.handsontable("selectCell", 0, col+1);
+                            e.preventDefault();
+                        }
+                    }
+
+                    
+                }
+            });
+            container.handsontable("selectCell", 0, 0);
+        }
+    </script>
+</body>
+</html>
