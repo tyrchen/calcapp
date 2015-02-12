@@ -10,12 +10,12 @@ import (
 )
 
 const (
-	BP_START       = 0x222233334444
+	BP_START       = 0x11a7222233334444
 	BP_END         = 0xf08eafddccccbbbb
 	BP_SLICE_START = 2
 	BP_SLICE_END   = 58
-	BP_GAP         = 0xe1111189321
-	BP_TOTAL       = 37000
+	BP_GAP         = 0xe11893219c86
+	BP_TOTAL       = 81 * 81 //37000
 	BP_ZG          = 60
 	BP_COLS        = 55 + 1
 	BP_FILENAME    = "/var/data/calcapp/bp/%s/basepoint%02d.dat"
@@ -83,6 +83,37 @@ func GenerateBpFiles(max uint) {
 		filename1 := GetFileName(i+30, true)
 		saveBpFile(filename1, values_list[i])
 	}
+}
+
+func GenerateBp2File(filename string) {
+	var value BpData
+	var val uint64
+	var i uint
+
+	for val = BP_START; val < BP_END; val += BP_GAP {
+		value[i] = generateBpData(val)
+		i++
+
+		if (i >= BP_TOTAL) {
+			break
+		}
+	}
+	saveBpFile(filename, value)
+}
+
+func LoadBp2File(filename string) (values BpData) {
+	n, err := ioutil.ReadFile(filename)
+	if err != nil {
+		panic(err)
+	}
+
+	m := bytes.NewBuffer(n)
+	dec := gob.NewDecoder(m)
+	err = dec.Decode(&values)
+	if err != nil {
+		panic(err)
+	}
+	return
 }
 
 func saveBpFile(filename string, values BpData) {

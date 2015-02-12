@@ -5,7 +5,7 @@ import (
 )
 
 func generateBp() {
-	utils.GenerateBpFiles(30)
+	utils.GenerateBp2File("data/calcv4.bp")
 }
 
 func main() {
