@@ -12,7 +12,7 @@ BIN=./bin
 SERVER=weixin
 DEPLOY_PATH=/home/tchen/calcapp
 
-PACKAGES=network utils calcv3 calcv4
+PACKAGES=network utils calcv5
 PACKAGE_PATHS=$(patsubst %,./%, $(PACKAGES))
 TARGETS=$(patsubst %.go,$(BIN)/%,$(wildcard *.go))
 ALL_FILES=$(shell find . -type f -name '*.go')
