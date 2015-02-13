@@ -9,7 +9,7 @@ const (
 	ROWS       = 64 //9
 	//GROUP_SIZE = 9 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 // G20
 	// GROUP_SIZE = 9 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3// G10
-	//GROUP_SIZE = 3 * 3 * 3 * 3
+	//GROUP_SIZE = 3 * 3
 	GROUP_SIZE = 3 * 3 * 3 * 3 * 3 * 3 * 3 * 3 // G9
 	LAYER 	   = 11
 	STOP_COL   = 0

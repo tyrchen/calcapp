@@ -35,7 +35,11 @@ func (self *BaseGroup) LoadBp(filename string) {
 	values := LoadBp2File(filename)
 
 	for row, value := range values {
+		if row >= GROUP_SIZE {
+			break
+		}
 		self.Data[row].LoadBp(value[:])
+
 	}
 }
 
