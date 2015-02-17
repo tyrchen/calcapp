@@ -4,7 +4,7 @@ import (
 	. "calcapp/utils"
 	//"strconv"
 	"strings"
-	//"fmt"
+	// "fmt"
 )
 
 var (
@@ -37,6 +37,7 @@ func (self *BaseData) LoadBp(bp string) {
 func (self *BaseData) LoadBp(bp []uint8) {
 	for i := 0; i < COLS - 1; i++ {
 		self.Bp[i] = Bpoint(bp[i])
+		self.Zbp[i].V = Value(bp[i])
 	}
 	self.Bp[COLS-1] = 0
 }

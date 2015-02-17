@@ -15,7 +15,7 @@ const (
 	STOP_COL   = 0
 	STOP_VALUE = 2047
 
-	CONCURRENCY = 9
+	CONCURRENCY = 1
 
 	CHUNK_SIZE = 3
 

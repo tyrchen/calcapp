@@ -2,7 +2,7 @@ package calcv5
 
 import (
 	. "calcapp/utils"
-	//"fmt"
+	// "fmt"
 	//"io/ioutil"
 	//"strings"
 	//"strconv"
@@ -31,7 +31,6 @@ func (self *BaseGroup) LoadBp(filename string) {
 			break
 		}
 		self.Data[row].LoadBp(value[:])
-
 	}
 }
 
@@ -71,10 +70,12 @@ func (self *BaseGroup) calc(pos Value) {
 	sz := GROUP_SIZE / CONCURRENCY
 	ch := make(chan bool, CONCURRENCY)
 
+	values := make([]Value, sz)
+
 	worker := func(index int) {
 		for i := index * sz; i < (index + 1) * sz; i++ {
 			self.Data[i].calc(pos)
-			self.G137[pos].V += self.Data[i].G137[pos].V
+			values[index] += self.Data[i].G137[pos].V
 		}
 		ch <- true
 	}
@@ -85,6 +86,9 @@ func (self *BaseGroup) calc(pos Value) {
 
 	for g := 0; g < CONCURRENCY; g++ {
 		<- ch
+		self.G137[pos].V += values[g]
 	}
+
+
 
 }

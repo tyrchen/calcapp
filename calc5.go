@@ -15,7 +15,7 @@ import (
 
 const (
 	//BASE_DATA_VALUE_ROWS = 1 + CHUNK_SIZE + 1
-	BASE_DATA_VALUE_ROWS = 2 + GROUP_SIZE
+	BASE_DATA_VALUE_ROWS = 2 //+ GROUP_SIZE
 )
 
 type CalcData struct {
@@ -93,10 +93,11 @@ func getValues(pos Value) (ret CalcData) {
 
 	for i = 0; i < 2; i++ {
 		ret.Values[i][1] = data.G137[pos+i]
-
+		/*
 		for j :=0; j < GROUP_SIZE; j++ {
 			ret.Values[i][j+2] = data.Data[j].G137[pos+i]
 		}
+		*/
 	}
 
 	return ret
