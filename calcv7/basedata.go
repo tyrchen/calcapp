@@ -1,4 +1,4 @@
-package calcv6
+package calcv7
 
 import (
 	. "calcapp/utils"

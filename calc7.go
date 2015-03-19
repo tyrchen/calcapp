@@ -1,7 +1,7 @@
 package main
 
 import (
-	. "calcapp/calcv6"
+	. "calcapp/calcv7"
 	. "calcapp/utils"
 	"code.google.com/p/go.net/websocket"
 	"encoding/json"
